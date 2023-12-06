@@ -199,20 +199,29 @@ public class SWCalculationServiceImpl implements SWCalculationService {
 		log.info("Time schedule start for sewerage demand generation on : " + date.format(dateTimeFormatter));
 //		List<String> tenantIds = sewerageCalculatorDao.getTenantId();
 		List<String> tenantIds = new ArrayList<>();
-		tenantIds.add("pb.fazilka");
-		tenantIds.add("pb.testing");
-		tenantIds.add("pb.amritsar");
-		tenantIds.add("pb.itpatiala");
-		tenantIds.add("pb.bassipathana");
-		tenantIds.add("pb.amargarh");
-		tenantIds.add("pb.nadala");
-		tenantIds.add("pb.bhadson");
-		tenantIds.add("pb.shahkot");
-		tenantIds.add("pb.mamdot");
-		tenantIds.add("pb.ahmedgarh");
-		tenantIds.add("pb.bhawanigarh");
-		tenantIds.add("pb.balachaur");
-		tenantIds.add("pb.talwara");
+		String tenat = requestInfo.getMsgId();
+		
+		 if (!tenat.contains("pb"))
+		{
+			tenantIds.add("pb.fazilka");
+			tenantIds.add("pb.testing");
+			tenantIds.add("pb.amritsar");
+			tenantIds.add("pb.itpatiala");
+			tenantIds.add("pb.bassipathana");
+			tenantIds.add("pb.amargarh");
+			tenantIds.add("pb.nadala");
+			tenantIds.add("pb.bhadson");
+			tenantIds.add("pb.shahkot");
+			tenantIds.add("pb.mamdot");
+			tenantIds.add("pb.ahmedgarh");
+			tenantIds.add("pb.bhawanigarh");
+			tenantIds.add("pb.balachaur");
+			tenantIds.add("pb.talwara");
+		}
+		else {
+			tenantIds.add(tenat);
+			
+		}
 		
 		if (tenantIds.isEmpty())
 			return;
