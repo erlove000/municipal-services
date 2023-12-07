@@ -311,6 +311,10 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
 //		List<String> tenantIds = wSCalculationDao.getTenantId();
 		List<String> tenantIds = new ArrayList<>();
+		String tenat = requestInfo.getMsgId();
+
+		 if (!tenat.contains("pb"))
+		{
 		tenantIds.add("pb.fazilka");
 		tenantIds.add("pb.amritsar");
 		tenantIds.add("pb.itpatiala");
@@ -344,7 +348,11 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 		tenantIds.add("pb.ghagga");
 
 
+		}
+		else {
+			tenantIds.add(tenat);
 
+		}
 		if (tenantIds.isEmpty()) {
 			log.info("No tenants are found for generating demand");
 			return;
