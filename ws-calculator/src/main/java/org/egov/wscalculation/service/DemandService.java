@@ -931,10 +931,10 @@ public class DemandService {
 			int generateDemandToIndex = IntStream.range(0, taxPeriods.size())
 					.filter(p -> taxPeriodFrom.equals(taxPeriods.get(p).getFromDate()))
 					.findFirst().getAsInt();
-
+			String cone=requestInfo.getKey();
 			log.info("Billing master data values for non metered connection:: {}", master);
 			List<WaterDetails> connectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
-					WSCalculationConstant.nonMeterdConnection, taxPeriodFrom, taxPeriodTo);
+					WSCalculationConstant.nonMeterdConnection, taxPeriodFrom, taxPeriodTo, cone);
 			
 			//Generate bulk demands for connections in below count
 			int bulkSaveDemandCount = configs.getBulkSaveDemandCount() != null ? configs.getBulkSaveDemandCount() : 1;
