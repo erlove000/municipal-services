@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.json.JSONParser;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.Role;
 import org.egov.common.contract.request.User;
@@ -45,6 +46,9 @@ import org.egov.pgr.utils.PGRUtils;
 import org.egov.pgr.utils.ResponseInfoFactory;
 import org.egov.pgr.utils.WorkFlowConfigs;
 import org.egov.tracer.model.CustomException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
@@ -671,6 +675,35 @@ public class GrievanceService {
 		return new CountResponse(factory.createResponseInfoFromRequestInfo(requestInfo, true), count);
 	}
 
+
+	public JSONArray getCountOpen(RequestInfo requestInfo, ServiceReqSearchCriteria serviceReqSearchCriteria) {
+		StringBuilder uri = new StringBuilder();
+		SearcherRequest searcherRequest = null;
+		try {
+			enrichRequest(requestInfo, serviceReqSearchCriteria);
+		} catch (CustomException e) {
+			if (e.getMessage().equals(ErrorConstants.NO_DATA_MSG))
+				return new JSONArray();// pGRUtils.getDefaultCountResponse(requestInfo);
+			else
+				throw e;
+		}
+		searcherRequest = pGRUtils.prepareCountOpenRequestWithDetails(uri, serviceReqSearchCriteria, requestInfo);
+		Object response = serviceRequestRepository.fetchCountOpenResult(uri, searcherRequest);
+		if (null == response)
+			return new JSONArray(); //pGRUtils.getDefaultServiceResponse(requestInfo);
+		
+	
+	
+		JSONObject jsonObj=(new JSONObject(response.toString()));//.get("data").toString();//=obj.getJSONArray("data");
+		JSONArray ja_data = jsonObj.getJSONArray("data");
+		//Double count = JsonPath.read(response, PGRConstants.PG_JSONPATH_COUNT);
+		//return new CountResponse(factory.createResponseInfoFromRequestInfo(requestInfo, true), count);
+		return ja_data;
+	}
+
+	
+	
+	
 	/**
 	 * method to replace the fileStoreIds with the respective urls acquired from
 	 * filestore service

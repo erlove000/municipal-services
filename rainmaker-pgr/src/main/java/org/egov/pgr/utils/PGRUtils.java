@@ -352,6 +352,15 @@ public class PGRUtils {
 		return SearcherRequest.builder().requestInfo(requestInfo).searchCriteria(serviceReqSearchCriteria).build();
 	}
 	
+	public SearcherRequest prepareCountOpenRequestWithDetails(StringBuilder uri,
+			ServiceReqSearchCriteria serviceReqSearchCriteria, RequestInfo requestInfo) {
+		uri.append(searcherHost);
+		String endPoint = searcherEndpoint.replace(MODULE_NAME, PGRConstants.SEARCHER_PGR_MOD_NAME).replace(SEARCH_NAME,
+				PGRConstants.SEARCHER_COUNTOPEN_DEF_NAME);
+		uri.append(endPoint);
+		return SearcherRequest.builder().requestInfo(requestInfo).searchCriteria(serviceReqSearchCriteria).build();
+	}
+	
 	public MdmsCriteriaReq prepareServiceDefSearchMdmsRequest(StringBuilder uri, String tenantId, RequestInfo requestInfo) {
 		uri.append(mdmsHost).append(mdmsEndpoint);
 		MasterDetail masterDetail = org.egov.mdms.model.MasterDetail.builder()

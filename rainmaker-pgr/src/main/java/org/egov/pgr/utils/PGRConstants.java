@@ -24,6 +24,7 @@ public class PGRConstants {
 
 	public static final String SEARCHER_PLAINSEARCH_DEF_NAME = "plainSearch";
 	public static final String SEARCHER_COUNT_DEF_NAME = "count";
+	public static final String SEARCHER_COUNTOPEN_DEF_NAME = "countOpen";
 	public static final String PG_JSONPATH_COUNT = "$.count[0].count";
 	public static final String SEARCHER_SRID_ASSIGNEDTO_DEF_NAME = "getServiceRequestsOnAssignedTo";
 	public static final String SRID_ASSIGNEDTO_JSONPATH = "$.servicesRequestIds.*.businesskey";
