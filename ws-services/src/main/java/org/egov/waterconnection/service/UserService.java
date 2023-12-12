@@ -318,12 +318,12 @@ public class UserService {
 	 * @param requestInfo
 	 * @return
 	 */
-	public Set<String> getUUIDForUsers(String mobileNumber, String tenantId, RequestInfo requestInfo) {
+	public Set<String> getUUIDForUsers(String mobileNumber, String tenantId, RequestInfo requestInfo,String name) {
 		//TenantId is not mandatory when Citizen searches. So it can be empty. Refer the value from UserInfo
 		tenantId = StringUtils.isEmpty(tenantId) ? requestInfo.getUserInfo().getTenantId() : tenantId;
 		UserSearchRequest userSearchRequest = UserSearchRequest.builder()
 				.requestInfo(requestInfo).userType("CITIZEN")
-				.tenantId(tenantId).mobileNumber(mobileNumber).build();
+				.tenantId(tenantId).mobileNumber(mobileNumber).name(name).build();
 		return getUsersUUID(userSearchRequest);
 	}
 
