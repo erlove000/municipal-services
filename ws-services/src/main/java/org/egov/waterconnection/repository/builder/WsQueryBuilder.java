@@ -93,7 +93,7 @@ public class WsQueryBuilder {
 		
 		String propertyIdQuery = " (conn.property_id in (";
 
-		if (!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getPropertyId())) {
+		if (!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getPropertyId()) || !StringUtils.isEmpty(criteria.getName() )) {
 			Set<String> propertyIds = new HashSet<>();
 			List<Property> propertyList = waterServicesUtil.propertySearchOnCriteria(criteria, requestInfo);
 			propertyList.forEach(property -> propertyIds.add(property.getPropertyId()));
@@ -105,7 +105,7 @@ public class WsQueryBuilder {
 			}
 		}
 		if(!StringUtils.isEmpty(criteria.getMobileNumber())) {
-			Set<String> uuids = userService.getUUIDForUsers(criteria.getMobileNumber(), criteria.getTenantId(), requestInfo);
+			Set<String> uuids = userService.getUUIDForUsers(criteria.getMobileNumber(), criteria.getTenantId(), requestInfo,criteria.getName());
 			boolean userIdsPresent = false;
 			if (!CollectionUtils.isEmpty(uuids)) {
 				addORClauseIfRequired(preparedStatement, query);
@@ -119,6 +119,25 @@ public class WsQueryBuilder {
 				query.append(")");
 			}
 		}
+
+			if(!StringUtils.isEmpty(criteria.getName())) {
+			Set<String> uuids = userService.getUUIDForUsers(criteria.getMobileNumber(), criteria.getTenantId(), requestInfo,criteria.getName());
+			boolean userIdsPresent = false;
+			if (!CollectionUtils.isEmpty(uuids)) {
+				addORClauseIfRequired(preparedStatement, query);
+				if(!propertyIdsPresent)
+					query.append("(");
+				query.append(" connectionholder.userid in (").append(createQuery(uuids)).append(" ))");
+				addToPreparedStatement(preparedStatement, uuids);
+				userIdsPresent = true;
+			}
+			if(propertyIdsPresent && !userIdsPresent){
+				query.append(")");
+			}
+		}
+
+
+		
 		if (!StringUtils.isEmpty(criteria.getTenantId())) {
 			addClauseIfRequired(preparedStatement, query);
 			query.append(" conn.tenantid = ? ");
