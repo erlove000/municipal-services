@@ -128,9 +128,9 @@ List<WaterDetails> waterDetails=jdbcTemplate.query(query,preparedStatement.toArr
 	}
 	
 	@Override
-	public List<WaterDetails> getConnectionsNoList(String tenantId, String connectionType, Long taxPeriodFrom, Long taxPeriodTo) {
+	public List<WaterDetails> getConnectionsNoList(String tenantId, String connectionType, Long taxPeriodFrom, Long taxPeriodTo,  String cone) {
 		List<Object> preparedStatement = new ArrayList<>();
-		String query = queryBuilder.getConnectionNumberList(tenantId, connectionType,WSCalculationConstant.ACTIVE_CONNECTION, taxPeriodFrom, taxPeriodTo, preparedStatement);
+		String query = queryBuilder.getConnectionNumberList(tenantId, connectionType,WSCalculationConstant.ACTIVE_CONNECTION, taxPeriodFrom, taxPeriodTo, cone, preparedStatement);
 		log.info("preparedStatement: "+ preparedStatement +" connection type: " + connectionType + " connection list : " + query);
 		return jdbcTemplate.query(query, preparedStatement.toArray(), demandSchedulerRowMapper);
 	}
