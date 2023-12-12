@@ -443,10 +443,21 @@ public class CalculatorUtil {
 	 * @return
 	 */
 	public MdmsCriteriaReq prepareWSTaxPeriodMdmsRequest(RequestInfo requestInfo, String serviceName, String tenantId) {
+		String type=null;
+		if(tenantId.contains("pb.khanna"))
+		{
+			type="ANNUAL";
+		}
+
+		else
+		{
+			type="QUATERLY";
+		}
+		
 		
 		log.info("prepareWSTaxPeriodMdmsRequest:: start");
 			MasterDetail masterDetail = MasterDetail.builder().name(WSCalculationConstant.TAXPERIOD_MASTERNAME)
-					.filter("[?(@.periodCycle=='QUATERLY' && @.service== '"+serviceName+"')]")
+					.filter("[?(@.periodCycle=='"+type+"' && @.service== '"+serviceName+"')]")
 					.build();
 			ModuleDetail moduleDetail = ModuleDetail.builder().moduleName(WSCalculationConstant.MODULE_NAME_BILLINGSERVICE)
 					.masterDetails(Arrays.asList(masterDetail)).build();
