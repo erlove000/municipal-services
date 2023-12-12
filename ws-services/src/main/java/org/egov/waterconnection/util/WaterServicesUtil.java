@@ -71,7 +71,7 @@ public class WaterServicesUtil {
 	private String locality = "locality=";
 	private String URL = "url";
 	private String localityCode = "locality";
-
+	private String name = "name=";
 	
 
 	/**
@@ -140,7 +140,7 @@ public class WaterServicesUtil {
 	public List<Property> propertySearchOnCriteria(SearchCriteria waterConnectionSearchCriteria,
 			RequestInfo requestInfo) {
 		if (StringUtils.isEmpty(waterConnectionSearchCriteria.getMobileNumber())
-				&& StringUtils.isEmpty(waterConnectionSearchCriteria.getPropertyId())) {
+				&& StringUtils.isEmpty(waterConnectionSearchCriteria.getPropertyId()) && StringUtils.isEmpty(waterConnectionSearchCriteria.getName())) {
 			return Collections.emptyList();
 		}
 		PropertyCriteria propertyCriteria = new PropertyCriteria();
@@ -150,6 +150,11 @@ public class WaterServicesUtil {
 		if (!StringUtils.isEmpty(waterConnectionSearchCriteria.getMobileNumber())) {
 			propertyCriteria.setMobileNumber(waterConnectionSearchCriteria.getMobileNumber());
 		}
+
+		if (!StringUtils.isEmpty(waterConnectionSearchCriteria.getName())) {
+			propertyCriteria.setName(waterConnectionSearchCriteria.getName());
+		}
+		
 		if (!StringUtils.isEmpty(waterConnectionSearchCriteria.getPropertyId())) {
 			HashSet<String> propertyIds = new HashSet<>();
 			propertyIds.add(waterConnectionSearchCriteria.getPropertyId());
@@ -240,6 +245,12 @@ public class WaterServicesUtil {
 			isanyparametermatch = true;
 			url.append(locality).append(criteria.getLocality());
 		}
+		if (!StringUtils.isEmpty(criteria.getName())) {
+			if (isanyparametermatch)url.append("&");
+			isanyparametermatch = true;
+			url.append(name).append(criteria.getName());
+		}
+		
 		if (!CollectionUtils.isEmpty(criteria.getUuids())) {
 			if (isanyparametermatch)url.append("&");
 			String uuidString = criteria.getUuids().stream().map(uuid -> uuid).collect(Collectors.toSet()).stream()
