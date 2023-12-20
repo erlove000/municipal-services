@@ -170,7 +170,9 @@ public class ServiceController {
     		System.out.println(obj.getInt("count"));
     		
     		 List<SMSRequest> smsRequestsTobeSent = new ArrayList<>();
-    		String msg="Dear "+obj.getString("tenantid")+", Your Trade License Application for "+obj.getInt("count")+" is sent for field verification. You may be contacted by the Field Inspector for further verification.  Thank You|1301157492438182299|1407160811702191801";
+    		//String msg="Dear "+obj.getString("tenantid")+", Your Trade License Application for "+obj.getInt("count")+" is sent for field verification. You may be contacted by the Field Inspector for further verification.  Thank You|1301157492438182299|1407160811702191801";
+    		String duration="24 hours";
+    		String msg="Alert, "+obj.getString("tenantid")+" ULB have "+obj.getInt("count")+" unassigned complaints for more than "+duration+" in mseva PGRS.PMIDC|1301157492438182299|1407170254756596436";
     		System.out.println("sending message "+msg+" to "+phone);
     		
     		smsRequestsTobeSent.add(SMSRequest.builder().mobileNumber(phone).message(msg).build());
