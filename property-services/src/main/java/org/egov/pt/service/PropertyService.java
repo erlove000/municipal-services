@@ -129,19 +129,19 @@ public class PropertyService {
 			processPropertyUpdate(request, propertyFromSearch);
 
 		request.getProperty().setWorkflow(null);
-		request.getProperty().setAdditionalDetails(jsonMerge( request.getProperty().getAdditionalDetails(),request.getProperty().getMystatus()));
+		// request.getProperty().setAdditionalDetails(jsonMerge( request.getProperty().getAdditionalDetails(),request.getProperty().getMystatus()));
 		return request.getProperty();
 	}
 	
 	
-	private JsonNode jsonMerge(JsonNode adddetail, JsonNode status_new) {
-		 ObjectMapper objectMapper = new ObjectMapper();
-		ObjectNode mergedNode = (ObjectNode) adddetail;
-	        mergedNode.setAll((ObjectNode) status_new);
+	// private JsonNode jsonMerge(JsonNode adddetail, JsonNode status_new) {
+	// 	 ObjectMapper objectMapper = new ObjectMapper();
+	// 	ObjectNode mergedNode = (ObjectNode) adddetail;
+	//         mergedNode.setAll((ObjectNode) status_new);
 
-	        return mergedNode;
+	//         return mergedNode;
 		
-	}
+	// }
 	
 	
 	private boolean checkIsRequestForMobileNumberUpdate(PropertyRequest request, Property propertyFromSearch) {
