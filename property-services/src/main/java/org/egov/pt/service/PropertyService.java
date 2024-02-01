@@ -209,17 +209,31 @@ if(!request.getProperty().getCreationReason().equals(CreationReason.MUTATION))
 		if(config.getIsWorkflowEnabled()) {
 
 			State state = wfService.updateWorkflow(request, CreationReason.UPDATE);
+			String Proptobestatus=request.getProperty().getAdditionalDetails().get("propertytobestatus").asText();
 
 			if (state.getIsStartState() == true
 					&& state.getApplicationStatus().equalsIgnoreCase(Status.INWORKFLOW.toString())
-					&& !propertyFromSearch.getStatus().equals(Status.INWORKFLOW)) {
+					&& !propertyFromSearch.getStatus().equals(Status.INWORKFLOW) && Proptobestatus.equalsIgnoreCase("INACTIVE")) {
 
 				propertyFromSearch.setStatus(Status.INACTIVE);
 				producer.push(config.getUpdatePropertyTopic(), OldPropertyRequest);
 				util.saveOldUuidToRequest(request, propertyFromSearch.getId());
 				producer.push(config.getSavePropertyTopic(), request);
 
-			} else if (state.getIsTerminateState()
+			}
+
+				else if (state.getIsStartState() == true
+					&& state.getApplicationStatus().equalsIgnoreCase(Status.INWORKFLOW.toString())
+					&& !propertyFromSearch.getStatus().equals(Status.INWORKFLOW) && Proptobestatus.equalsIgnoreCase("ACTIVE")) {
+
+				propertyFromSearch.setStatus(Status.ACTIVE);
+				producer.push(config.getUpdatePropertyTopic(), OldPropertyRequest);
+				util.saveOldUuidToRequest(request, propertyFromSearch.getId());
+				producer.push(config.getSavePropertyTopic(), request);
+
+			}
+			
+			else if (state.getIsTerminateState()
 					&& !state.getApplicationStatus().equalsIgnoreCase(Status.ACTIVE.toString())) {
 
 				terminateWorkflowAndReInstatePreviousRecord(request, propertyFromSearch);
