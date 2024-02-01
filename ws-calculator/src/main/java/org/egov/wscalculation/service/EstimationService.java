@@ -319,10 +319,12 @@ public class EstimationService {
 		final String waterSubUsageType = (String) additionalDetail
 				.getOrDefault(WSCalculationConstant.WATER_SUBUSAGE_TYPE, null);
 
-		final String buildingType = WSCalculationConstant.PROPERTY_TYPE_MIXED.equalsIgnoreCase(propertyType)
-				? (String) additionalDetail.getOrDefault(WSCalculationConstant.UNIT_USAGE_TYPE_KEY, null)
-				: propertyType;
+		// final String buildingType = WSCalculationConstant.PROPERTY_TYPE_MIXED.equalsIgnoreCase(propertyType)
+		// 		? (String) additionalDetail.getOrDefault(WSCalculationConstant.UNIT_USAGE_TYPE_KEY, null)
+		// 		: propertyType;
 
+		// For water mix building type giving null ass unit usages type is missing in  additional detail of ws application
+		final String buildingType =propertyType;
 		return billingSlabs.stream().filter(slab -> {
 			boolean isBuildingTypeMatching = slab.getBuildingType().equalsIgnoreCase(buildingType);
 			boolean isConnectionTypeMatching = slab.getConnectionType().equalsIgnoreCase(connectionType);
