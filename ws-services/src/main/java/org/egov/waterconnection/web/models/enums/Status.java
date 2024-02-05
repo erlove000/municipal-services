@@ -14,6 +14,8 @@ public enum Status {
 
   INWORKFLOW("INWORKFLOW");
 
+  PENDINGWS("PENDINGWS"); // properties created as new during water & sewerage migration where existing property has not matched
+
   private String value;
 
   Status(String value) {
