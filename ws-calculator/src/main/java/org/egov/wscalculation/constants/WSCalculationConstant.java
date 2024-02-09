@@ -307,6 +307,8 @@ public class WSCalculationConstant {
 	public static final String WS_BILL_SCHEDULER_TRANSACTION = "Bill Generation";
 
 	public static final String PROPERTY_TYPE_MIXED = "MIXED";
+	public static final String PROPERTY_SUB_DOMESTIC_TYPE_MIXED = "USAGE_DOM_NA";
+	public static final String PROPERTY_SUB_COMMERCIAL_TYPE_MIXED = "USAGE_COMM_NA";
 	
 	public static final String UNIT_USAGE_TYPE_KEY = "unitUsageType";
 	
