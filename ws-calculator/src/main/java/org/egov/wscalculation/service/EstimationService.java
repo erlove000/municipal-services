@@ -338,13 +338,13 @@ public class EstimationService {
  {
 	 finalbuildingType =null; 
  }
- else if (waterSubUsageType!=WSCalculationConstant.PROPERTY_SUB_COMMERCIAL_TYPE_MIXED )
+else if (waterSubUsageType!=WSCalculationConstant.PROPERTY_SUB_COMMERCIAL_TYPE_MIXED && propertyType.equalsIgnoreCase(WSCalculationConstant.PROPERTY_TYPE_MIXED))
  {
 	 finalbuildingType =null; 
  }
  else
  {
-	 finalbuildingType = null;
+	 finalbuildingType = propertyType;
  }
  
  final String buildingType=finalbuildingType;
