@@ -280,7 +280,7 @@ public class SWCalculationServiceImpl implements SWCalculationService {
 		tenantIds.add("pb.lalru");
 		tenantIds.add("pb.lehragaga");
 		tenantIds.add("pb.longowal");
-		tenantIds.add("pb.machiwara");
+		tenantIds.add("pb.machhiwara");
 		tenantIds.add("pb.mahilpur");
 		tenantIds.add("pb.majitha");
 		tenantIds.add("pb.makhu");
