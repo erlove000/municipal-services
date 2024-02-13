@@ -315,6 +315,10 @@ public class WorkflowNotificationService {
 			String messageToReplace = message;
 			if (messageToReplace.contains("<Owner Name>"))
 				messageToReplace = messageToReplace.replace("<Owner Name>", mobileAndName.getValue());
+
+			if (messageToReplace.contains("<connection Number>"))
+				messageToReplace = messageToReplace.replace("<connection Number>", sewerageConnectionRequest.getSewerageConnection().getConnectionNo());
+			
 			if (messageToReplace.contains("<Service>"))
 				messageToReplace = messageToReplace.replace("<Service>", SWConstants.SERVICE_FIELD_VALUE_NOTIFICATION);
 
