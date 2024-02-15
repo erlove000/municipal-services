@@ -114,8 +114,8 @@ public class SWCalculatorQueryBuilder {
 		
 		
 		// add Not commercial for amritsar
-		addClauseIfRequired(preparedStatement, query);
-		query.append("pt.usagecategory !='NONRESIDENTIAL.COMMERCIAL'");
+		// addClauseIfRequired(preparedStatement, query);
+		// query.append("pt.usagecategory !='NONRESIDENTIAL.COMMERCIAL'");
 		
 		//Added connection number for testing Anonymous User issue
 //		addClauseIfRequired(preparedStatement, query);
