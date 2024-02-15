@@ -5,12 +5,22 @@ import java.util.List;
 import org.egov.swcalculation.constants.SWCalculationConstant;
 import org.egov.swcalculation.web.models.BillGenerationSearchCriteria;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Controller
 public class SWCalculatorQueryBuilder {
 	
 	private static final String connectionNoListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id";
+	
+	private static final String connectionNoNonCommercialListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate "
+			+ " FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id"
+			+ " inner join eg_pt_property pt on conn.property_id= pt.propertyid ";
+
+	
+	public static final String BILL_STATUS_UPDATE_QUERY = "UPDATE egbs_bill_v1 SET status=? WHERE status='ACTIVE' ";
+	
+	private static final String LocalityListAsPerBatchQuery = "SELECT distinct(localitycode) FROM eg_ws_batch_locality_mapping";
 	
 	private static final String distinctTenantIdsCriteria = "SELECT distinct(tenantid) FROM eg_sw_connection sw";
 
@@ -77,6 +87,73 @@ public class SWCalculatorQueryBuilder {
 
 		return query.toString();
 	}
+	
+	
+	public String getConnectionNumberListForNonCommercial(String tenantId, String connectionType, String status, Long taxPeriodFrom, Long taxPeriodTo, String cone, List<Object> preparedStatement) {
+		StringBuilder query = new StringBuilder(connectionNoNonCommercialListQuery);
+		// Add connection type
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" sw.connectiontype = ? ");
+		preparedStatement.add(connectionType);
+		
+		//Add status
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.status = ? ");
+		preparedStatement.add(status);
+		
+		//Get the activated connections status	
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.applicationstatus = ? ");
+		preparedStatement.add(SWCalculationConstant.CONNECTION_ACTIVATED);
+		
+
+		// add tenantid
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.tenantid = ? ");
+		preparedStatement.add(tenantId);
+		
+		
+		// add Not commercial for amritsar
+		addClauseIfRequired(preparedStatement, query);
+		query.append("pt.usagecategory !='NONRESIDENTIAL.COMMERCIAL'");
+		
+		//Added connection number for testing Anonymous User issue
+//		addClauseIfRequired(preparedStatement, query);
+//		query.append(" conn.connectionno ='0603001817' ");
+		
+		//Add not null condition
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.connectionno is not null");
+
+                if(cone!=null && cone!="")
+		{
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.connectionno = ? ");
+			preparedStatement.add(cone);
+		}
+		
+		query.append(fetchConnectionsToBeGenerate(tenantId, taxPeriodFrom, taxPeriodTo, preparedStatement));
+
+		return query.toString();
+	}
+	
+	
+	
+	public String getLocalityListWithBatch(String tenantId, String batchCode, List<Object> preparedStatement) {
+		StringBuilder query = new StringBuilder(LocalityListAsPerBatchQuery);
+		// add batchcode
+				addClauseIfRequired(preparedStatement, query);
+				query.append(" where conn.batchCode = ? ");
+				preparedStatement.add(batchCode);
+				
+				// add tenantid
+				addClauseIfRequired(preparedStatement, query);
+				query.append(" conn.tenantid = ? ");
+				preparedStatement.add(tenantId);
+	
+		return query.toString();
+	}
+	
 	
 	public String fetchConnectionsToBeGenerate(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, List<Object> preparedStatement) {
 		StringBuilder query = new StringBuilder(fiterConnectionBasedOnTaxPeriod);
@@ -250,6 +327,45 @@ public class SWCalculatorQueryBuilder {
 		query.append(" ORDER BY d.taxperiodfrom desc limit 1 ");
 		
 		return query.toString();
+	}
+	
+	
+	/**
+	 * Bill expire query builder
+	 * 
+	 * @param billIds
+	 * @param preparedStmtList
+	 */
+	public String getBillStatusUpdateQuery(List<String> consumerCodes,String businessService, List<Object> preparedStmtList) {
+
+		StringBuilder builder = new StringBuilder(BILL_STATUS_UPDATE_QUERY);
+
+		if (!CollectionUtils.isEmpty(consumerCodes)) {
+
+			builder.append(" AND id IN ( SELECT billid from egbs_billdetail_v1 where consumercode IN (");
+			appendListToQuery(consumerCodes, preparedStmtList, builder);
+			builder.append(" AND businessservice=? )");
+			preparedStmtList.add(businessService);
+		}
+		
+		return builder.toString();
+	}
+	
+	/**
+	 * @param billIds
+	 * @param preparedStmtList
+	 * @param builder
+	 */
+	private void appendListToQuery(List<String> values, List<Object> preparedStmtList, StringBuilder builder) {
+		int length = values.size();
+
+		for (int i = 0; i < length; i++) {
+			builder.append(" ?");
+			if (i != length - 1)
+				builder.append(",");
+			preparedStmtList.add(values.get(i));
+		}
+		builder.append(")");
 	}
 	
 	public String isConnectionDemandAvailableForBillingCycle(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, String consumerCode, List<Object> preparedStatement) {

@@ -3,6 +3,7 @@ package org.egov.swcalculation.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.egov.swcalculation.constants.SWCalculationConstant;
 import org.egov.swcalculation.repository.builder.SWCalculatorQueryBuilder;
 import org.egov.swcalculation.repository.rowMapper.DemandSchedulerRowMapper;
@@ -10,6 +11,7 @@ import org.egov.swcalculation.web.models.SewerageDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,11 +38,28 @@ public class SewerageCalculatorDaoImpl implements SewerageCalculatorDao {
 	@Override
 	public List<SewerageDetails> getConnectionsNoList(String tenantId, String connectionType, Long taxPeriodFrom, Long taxPeriodTo, String cone ) {
 		List<Object> preparedStatement = new ArrayList<>();
+		
 		String query = queryBuilder.getConnectionNumberList(tenantId, connectionType,SWCalculationConstant.ACTIVE, taxPeriodFrom, taxPeriodTo, cone, preparedStatement);
+		
+		if((tenantId.equals("pb.amritsar"))) {
+			 query = queryBuilder.getConnectionNumberListForNonCommercial(tenantId, connectionType,SWCalculationConstant.ACTIVE, taxPeriodFrom, taxPeriodTo, cone, preparedStatement);
+		}
+		
 		StringBuilder builder = new StringBuilder();
 		builder.append("preparedStatement:").append(preparedStatement).append("sewerage: ").append(connectionType).append(" connection list : ").append(query);
 		log.info(builder.toString());
 		return jdbcTemplate.query(query, preparedStatement.toArray(), demandSchedulerRowMapper);
+	}
+	
+	
+	
+	
+	@Override
+	public List<String> getLocalityList(String tenantId,String batchCode ) {
+		List<Object> preparedStatement = new ArrayList<>();
+		String query = queryBuilder.getLocalityListWithBatch(tenantId,batchCode,preparedStatement);
+		log.info("batchCode " + batchCode + " Locality list : " + query);
+		return jdbcTemplate.queryForList(query, preparedStatement.toArray(), String.class);
 	}
 	
 	@Override
@@ -73,4 +92,21 @@ public class SewerageCalculatorDaoImpl implements SewerageCalculatorDao {
 		return jdbcTemplate.queryForObject(query, preparedStatement.toArray(), Boolean.class);
 	}
 
+	
+	
+	/**
+	 * executes query to update bill status to expired 
+	 * @param billIds
+	 */
+	public void updateBillStatus(List<String> consumerCodes,String businessService, String status) {
+		if (CollectionUtils.isEmpty(consumerCodes))
+			return;
+
+		List<Object> preparedStmtList = new ArrayList<>();
+		preparedStmtList.add(status.toString());
+		String queryStr = queryBuilder.getBillStatusUpdateQuery(consumerCodes,businessService, preparedStmtList);
+		jdbcTemplate.update(queryStr, preparedStmtList.toArray());
+	}
+	
+	
 }

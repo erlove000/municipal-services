@@ -14,7 +14,12 @@ public interface SewerageCalculatorDao {
 	
 	Long searchLastDemandGenFromDate(String consumerCode, String tenantId);
 	
-	Boolean isConnectionDemandAvailableForBillingCycle(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, String consumerCode); 
+	Boolean isConnectionDemandAvailableForBillingCycle(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, String consumerCode);
+
+	List<String> getLocalityList(String tenantId, String locality);
+
+	void updateBillStatus(List<String> consumerCodes, String businessservice, String status);
+
 
 
 }

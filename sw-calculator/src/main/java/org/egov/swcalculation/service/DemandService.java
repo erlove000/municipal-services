@@ -110,6 +110,9 @@ public class DemandService {
 
 	@Autowired
 	private SewerageConnectionRepository sewerageConnectionRepository;
+	
+	
+	
 	/**
 	 * Creates or updates Demand
 	 * 
@@ -822,6 +825,12 @@ List<Demand> demands=res.getDemands();
 						connectionNosCount=0;
 
 					}
+					
+					//update active bill to expired
+					List<String> consumerCodes= new ArrayList<String>();
+					consumerCodes.add(sewConnDetails.getConnectionNo());
+					sewerageCalculatorDao.updateBillStatus(consumerCodes,"SW", "EXPIRED");
+					
 
 				}catch (Exception e) {
 					log.error("Exception occurred while generating demand for sewerage connectionno: "+sewConnDetails.getConnectionNo() + " tenantId: "+tenantId);
