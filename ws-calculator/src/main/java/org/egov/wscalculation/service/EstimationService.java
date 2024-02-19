@@ -216,7 +216,33 @@ public class EstimationService {
 			Double totalUOM = getUnitOfMeasurement(property, waterConnection, calculationAttribute, criteria);
 //			if (totalUOM == 0.0)
 //				return waterCharge;
-			BillingSlab billSlab = billingSlabs.get(0);
+			//BillingSlab billSlab = billingSlabs.get(0); old senrio as mix case having 2 billing slag in it
+
+			additionalDetail = mapper.convertValue(criteria.getWaterConnection().getAdditionalDetails(), HashMap.class);
+			final String waterSubUsageType = (String) additionalDetail
+					.getOrDefault(WSCalculationConstant.WATER_SUBUSAGE_TYPE, null);
+			
+			BillingSlab billSlab=null;
+			BillingSlab foundSlab = null;
+			if (property.getUsageCategory().equalsIgnoreCase("MIXED"))
+			{
+				System.out.println("Mixed Demand Generation");
+				for (BillingSlab slab : billingSlabs) {
+				    if (slab.getWaterSubUsageType().equals(waterSubUsageType)) 
+				    { 
+				        foundSlab = slab;
+				        System.out.println("founded Billing Slab= "+foundSlab);
+				        break;
+				    }
+				}
+				
+				billSlab=foundSlab;
+			}
+			else
+			{
+				billSlab = billingSlabs.get(0);
+			}
+
 			
 			log.info("totalUOM: " + totalUOM);
 
