@@ -1,6 +1,8 @@
 package org.egov.wscalculation.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,6 +78,27 @@ public class PayService {
 		estimates.put(WSCalculationConstant.WS_TIME_PENALTY, penalty.setScale(2, 2));
 		estimates.put(WSCalculationConstant.WS_TIME_INTEREST, interest.setScale(2, 2));
 		return estimates;
+	}
+
+	public Map<String, BigDecimal> applyPenaltyRebateROUNDOFF(BigDecimal waterCharge,
+			String assessmentYear, Map<String, JSONArray> timeBasedExemptionMasterMap, Long billingExpiryDate,Boolean isrebateavail, Long From, Long To) {
+
+		if (BigDecimal.ZERO.compareTo(waterCharge) >= 0)
+			return Collections.emptyMap();
+		Map<String, BigDecimal> estimates = new HashMap<>();
+		long currentUTC = System.currentTimeMillis();
+		long numberOfDaysInMillis = billingExpiryDate - currentUTC;
+		BigDecimal noOfDays = BigDecimal.valueOf((TimeUnit.MILLISECONDS.toDays(Math.abs(numberOfDaysInMillis))));
+		if(BigDecimal.ONE.compareTo(noOfDays) <= 0) noOfDays = noOfDays.add(BigDecimal.ONE);
+		if (!isrebateavail)
+		{
+			BigDecimal rebate = getApplicableroundoff(waterCharge, noOfDays, timeBasedExemptionMasterMap.get(WSCalculationConstant.WC_REBATE_MASTER), From, To);
+			
+			if(rebate!=null)
+				{estimates.put(WSCalculationConstant.WS_TIME_REBATE_ROUND_OFF, rebate.setScale(2, 2));}
+		}
+
+		return estimates;
 	}
 
 	/**
@@ -171,5 +194,39 @@ public class PayService {
 		}
 		//applicableInterest.multiply(noOfDays.divide(BigDecimal.valueOf(365), 6, 5));
 		return applicableInterest;
+	}
+
+	public BigDecimal getApplicableroundoff(BigDecimal waterCharge, BigDecimal noOfDays, JSONArray config, Long From, Long To) {
+		BigDecimal notapplicablerebate = BigDecimal.ZERO;
+		Map<String, Object> rebateMaster = mDService.getApplicableMaster(estimationService.getAssessmentYear(), config);
+		if (null == rebateMaster) return notapplicablerebate;
+		BigDecimal rate = null ;
+		 BigDecimal flatAmt = null;
+		 Integer Ratemdms=0;
+		 String formattedValue = null;
+		for (int i=0; i<config.size(); i++)
+		{
+			 HashMap<String,String>  obj=(HashMap<String,String>)config.get(i);
+			 Long rebatePeriodFrom=Long.parseLong(obj.get("rebatePeriodFrom")); 
+			 Long rebatePeriodTo=Long.parseLong(obj.get("rebatePeriodTo")); 
+			 if ( rebatePeriodFrom>=From && rebatePeriodTo<=To)
+			 {
+				 Ratemdms=Integer.parseInt(obj.get("rate")); 
+				 double taxRatemdms = Ratemdms / 100.0;
+				 BigDecimal taxRatemdmsvalue = new BigDecimal(taxRatemdms);
+				    
+				    BigDecimal result=taxRatemdmsvalue.multiply(waterCharge);
+				    BigDecimal roundedValue = result.setScale(2, RoundingMode.HALF_UP);
+			        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+			       formattedValue = decimalFormat.format(roundedValue);
+			       
+			}
+		}
+		BigDecimal interestPenaltyRebateEstimate =null;
+		if (formattedValue != null) {
+			interestPenaltyRebateEstimate = new BigDecimal(formattedValue);
+		}
+		System.out.println(interestPenaltyRebateEstimate);
+		return interestPenaltyRebateEstimate;
 	}
 }
