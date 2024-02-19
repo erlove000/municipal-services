@@ -2,9 +2,14 @@ package org.egov.wscalculation.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.CompletableToListenableFutureAdapter;
+import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +67,9 @@ public class EstimationService {
 
 	@Autowired
 	private WSCalculationUtil wSCalculationUtil;
+
+	@Autowired
+	private MasterDataService mDService;
 
 	/**
 	 * Generates a List of Tax head estimates with tax head code, tax head category
@@ -104,11 +113,76 @@ public class EstimationService {
 		// mDataService.setWaterConnectionMasterValues(requestInfo, tenantId,
 		// billingSlabMaster,
 		// timeBasedExemptionMasterMap);
-		BigDecimal taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster,
-				billingSlabIds, request);
-		List<TaxHeadEstimate> taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
-				timeBasedExemptionMasterMap,
-				RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());
+		// BigDecimal taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster,
+		// 		billingSlabIds, request);
+		// List<TaxHeadEstimate> taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
+		// 		timeBasedExemptionMasterMap,
+		// 		RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());
+
+		Map<String, JSONArray> rebate = new HashMap<>();
+		 rebate.put(WSCalculationConstant.WC_REBATE_MASTER,
+					(JSONArray) (masterData.getOrDefault(WSCalculationConstant.WC_REBATE_MASTER, null)));
+			System.out.println(rebate);
+			int arraySize =0;
+		JSONArray rb=(JSONArray)rebate.get("Rebate");
+		if (rb==null)
+		{
+			 arraySize = 0;
+		}
+		else {
+		 arraySize = rb.size();
+		}System.out.println(arraySize); 
+		 long demandtodatemdms= criteria.getTo();
+		 long demandFromdatemdms= criteria.getFrom();
+		 Integer Ratemdms=0;
+			List<TaxHeadEstimate> taxHeadEstimates=new ArrayList<>();
+			BigDecimal taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster,
+					billingSlabIds, request);
+		   
+		 for (int i=0; i< arraySize;i++)
+		 {
+			 HashMap<String,String>  obj=(HashMap<String,String>)rb.get(i);
+			 Long rebatePeriodFrom=Long.parseLong(obj.get("rebatePeriodFrom")); 
+			 Long rebatePeriodTo=Long.parseLong(obj.get("rebatePeriodTo")); 
+			 if ( rebatePeriodFrom>=demandFromdatemdms && rebatePeriodTo<=demandtodatemdms)
+			 { 
+				  long currentEpochMillis = System.currentTimeMillis();
+				  LocalDate localDate = LocalDate.parse(obj.get("endingDay"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+			       LocalDateTime localDateTime = localDate.atTime(23, 59, 59);
+			       ZonedDateTime localDateTimeZone = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+			       ZonedDateTime gmtDateTime = localDateTimeZone.withZoneSameInstant(ZoneId.of("GMT"));
+			       long endingDay = gmtDateTime.toInstant().toEpochMilli();
+				 if  (endingDay>=currentEpochMillis)
+				 {
+					 Ratemdms=Integer.parseInt(obj.get("rate")); 
+					 double taxRatemdms = Ratemdms / 100.0;
+					   BigDecimal taxRatemdmsvalue = new BigDecimal(taxRatemdms);
+					    
+					    BigDecimal result=taxRatemdmsvalue.multiply(taxAmt);
+					    BigDecimal roundedValue = result.setScale(2, RoundingMode.HALF_UP);
+				        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+				       String formattedValue = decimalFormat.format(roundedValue);
+				       BigDecimal finalrebatetax = new BigDecimal(formattedValue).negate();
+				      
+				    	if (finalrebatetax.compareTo(BigDecimal.ZERO)<0)
+							
+						{
+							 taxHeadEstimates = getEstimatesForTaxwithrebate(taxAmt,finalrebatetax, criteria.getWaterConnection(),
+									timeBasedExemptionMasterMap,
+									RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());
+						}
+				 }
+			 }
+			 else
+			 {
+				 taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
+							timeBasedExemptionMasterMap,
+							RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());	
+			 }
+		 }
+
+		
 
 		Map<String, List> estimatesAndBillingSlabs = new HashMap<>();
 		estimatesAndBillingSlabs.put("estimates", taxHeadEstimates);
@@ -148,6 +222,28 @@ public class EstimationService {
 		 * WS_WATER_CESS) .estimateAmount(waterCess.setScale(2, 2)).build()); }
 		 */
 		return estimates;
+	}
+
+	private List<TaxHeadEstimate> getEstimatesForTaxwithrebate(BigDecimal waterCharge,BigDecimal waterrebate, WaterConnection connection,
+			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper) {
+		List<TaxHeadEstimate> estimates = new ArrayList<>();
+		// water_charge
+		estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_CHARGE)
+				.estimateAmount(waterCharge.setScale(2, 2)).build());
+		estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_TIME_REBATE)
+				.estimateAmount(waterrebate.setScale(2, 2)).build());
+		// Water_cess
+		/*
+		 * if
+		 * (timeBasedExemptionsMasterMap.get(WSCalculationConstant.WC_WATER_CESS_MASTER)
+		 * != null) { List<Object> waterCessMasterList = timeBasedExemptionsMasterMap
+		 * .get(WSCalculationConstant.WC_WATER_CESS_MASTER); BigDecimal waterCess;
+		 * waterCess = waterCessUtil.getWaterCess(waterCharge,
+		 * WSCalculationConstant.Assessment_Year, waterCessMasterList);
+		 * estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.
+		 * WS_WATER_CESS) .estimateAmount(waterCess.setScale(2, 2)).build()); }
+		 */
+		return estimates;
 	}
 
 	/**
