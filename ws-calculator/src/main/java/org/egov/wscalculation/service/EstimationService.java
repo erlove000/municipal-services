@@ -174,14 +174,13 @@ public class EstimationService {
 						}
 				 }
 			 }
-			 else
-			 {
-				 taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
-							timeBasedExemptionMasterMap,
-							RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());	
-			 }
-		 }
-
+				 else
+						 {
+							 taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
+										timeBasedExemptionMasterMap,
+										RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());	
+						 }
+		 }
 		
 
 		Map<String, List> estimatesAndBillingSlabs = new HashMap<>();
@@ -192,7 +191,7 @@ public class EstimationService {
 		for(Map.Entry<String, List> ent : estimatesAndBillingSlabs.entrySet()) {
 			  log.info(" estimatesAndBillingSlabs Key = " + ent.getKey() + ", Value = " + ent.getValue());
 		}
-		return estimatesAndBillingSlabs;
+		 return estimatesAndBillingSlabs;
 	}
 
 	/**
@@ -243,7 +242,7 @@ public class EstimationService {
 		 * estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.
 		 * WS_WATER_CESS) .estimateAmount(waterCess.setScale(2, 2)).build()); }
 		 */
-		return estimates;
+			return estimates;
 	}
 
 	/**
