@@ -718,9 +718,8 @@ public class DemandService {
 					 fromtaxperiodrate=demandfrom;
 					totaxperiodrate= demandto;
 					  isrebateapplicable.set(false);
-				 }
-			 }
-		 }
+}
+			 }
 
 		List<TaxPeriod> taxPeriods = mstrDataService.getTaxPeriodList(requestInfoWrapper.getRequestInfo(), tenantId,
 				WSCalculationConstant.SERVICE_FIELD_VALUE_WS);
@@ -734,7 +733,7 @@ public class DemandService {
 			List<String> taxHeadMasterCodes = demand.getDemandDetails().stream().map(DemandDetail::getTaxHeadMasterCode).collect(Collectors.toList());;
 			if (!(isMigratedCon && oldDemand.getId().equalsIgnoreCase(demand.getId()))) {
 				log.info("-------updateDemands-----inside if-------demand.getId()--------"+demand.getId()+"-------oldDemand.getId()---------"+oldDemand.getId());
-				if (!demand.getIsPaymentCompleted() && totalTax.compareTo(totalCollection) > 0
+				if (!demand.getIsPaymentCompleted() && totalTax.compareTo(totalCollection) > 0)
 				// 		&& !taxHeadMasterCodes.contains(WSCalculationConstant.WS_TIME_PENALTY)) {
 				// 	if (demand.getStatus() != null && WSCalculationConstant.DEMAND_CANCELLED_STATUS
 				// 			.equalsIgnoreCase(demand.getStatus().toString()))
@@ -753,7 +752,7 @@ public class DemandService {
 					addRoundOffTaxHead(tenantId, demand.getDemandDetails());
 					demandsToBeUpdated.add(demand);
 				
-				}
+				  }
 				else if  (!isrebateapplicable.get()&& taxHeadMasterCodes.contains(WSCalculationConstant.WS_TIME_REBATE) && !taxHeadMasterCodes.contains(WSCalculationConstant.WS_TIME_REBATE_ROUND_OFF)) 
 				{
 					if (demand.getStatus() != null && WSCalculationConstant.DEMAND_CANCELLED_STATUS
@@ -770,7 +769,9 @@ public class DemandService {
 		// Call demand update in bulk to update the interest or penalty
 		DemandRequest request = DemandRequest.builder().demands(demandsToBeUpdated).requestInfo(requestInfo).build();
 		repository.fetchResult(utils.getUpdateDemandUrl(), request);
-		return res.getDemands();
+		
+		 }
+			 return res.getDemands();
 
 	}
 	
@@ -875,7 +876,7 @@ public class DemandService {
 	 */
 
 	private boolean applyTimeBasedApplicables(Demand demand, RequestInfoWrapper requestInfoWrapper,
-			Map<String, JSONArray> timeBasedExemptionMasterMap, List<TaxPeriod> taxPeriods,,Boolean isrebateapp) {
+			Map<String, JSONArray> timeBasedExemptionMasterMap, List<TaxPeriod> taxPeriods,Boolean isrebateapp) {
 
 		String tenantId = demand.getTenantId();
 		String demandId = demand.getId();
@@ -1033,6 +1034,7 @@ public class DemandService {
 						.build());
 	
 
+		}
 		return isCurrentDemand;
 	}
 
