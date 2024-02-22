@@ -81,8 +81,8 @@ public class PayService {
 	}
 
 	public Map<String, BigDecimal> applyPenaltyRebateROUNDOFF(BigDecimal waterCharge,
-			String assessmentYear, Map<String, JSONArray> timeBasedExemptionMasterMap, Long billingExpiryDate,Boolean isrebateavail, Long From, Long To) {
-
+					String assessmentYear, Map<String, JSONArray> timeBasedExemptionMasterMap, Long billingExpiryDate,Boolean isrebateavail, Long From, Long To)
+	{
 		if (BigDecimal.ZERO.compareTo(waterCharge) >= 0)
 			return Collections.emptyMap();
 		Map<String, BigDecimal> estimates = new HashMap<>();
@@ -98,7 +98,7 @@ public class PayService {
 				{estimates.put(WSCalculationConstant.WS_TIME_REBATE_ROUND_OFF, rebate.setScale(2, 2));}
 		}
 
-		return estimates;
+		return estimates;
 	}
 
 	/**
