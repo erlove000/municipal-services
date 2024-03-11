@@ -724,12 +724,12 @@ public class EstimationService {
 		}
 
 		BigDecimal otherCharges = BigDecimal.ZERO;
-		/*
-		 * if (feeObj.get(WSCalculationConstant.OTHER_CHARGE_CONST) != null) {
-		 * otherCharges = new
-		 * BigDecimal(feeObj.getAsNumber(WSCalculationConstant.OTHER_CHARGE_CONST).
-		 * toString()); }
-		 */
+		
+		  if (feeObj.get(WSCalculationConstant.OTHER_FEE_CONST) != null) {
+		  otherCharges = new
+		  BigDecimal(feeObj.getAsNumber(WSCalculationConstant.OTHER_FEE_CONST).
+		  toString()); }
+		 
 		BigDecimal taxAndCessPercentage = BigDecimal.ZERO;
 		if (feeObj.get(WSCalculationConstant.TAX_PERCENTAGE_CONST) != null) {
 			taxAndCessPercentage = new BigDecimal(
@@ -778,11 +778,10 @@ public class EstimationService {
 		if (!(meterTestingFee.compareTo(BigDecimal.ZERO) == 0))
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_METER_TESTING_FEE)
 					.estimateAmount(meterTestingFee.setScale(2, 2)).build());
-		/*
-		 * if (!(otherCharges.compareTo(BigDecimal.ZERO) == 0))
-		 * estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.
-		 * WS_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
-		 */
+		
+		  if (!(otherCharges.compareTo(BigDecimal.ZERO) == 0))
+		  estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
+		 
 		if (!(roadCuttingCharge.compareTo(BigDecimal.ZERO) == 0))
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_ROAD_CUTTING_CHARGE)
 					.estimateAmount(roadCuttingCharge.setScale(2, 2)).build());
