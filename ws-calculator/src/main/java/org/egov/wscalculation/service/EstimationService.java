@@ -138,7 +138,8 @@ public class EstimationService {
 			List<TaxHeadEstimate> taxHeadEstimates=new ArrayList<>();
 			BigDecimal taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster,
 					billingSlabIds, request);
-		   
+		   if (arraySize>0)
+			{
 		 for (int i=0; i< arraySize;i++)
 		 {
 			 HashMap<String,String>  obj=(HashMap<String,String>)rb.get(i);
@@ -182,6 +183,13 @@ public class EstimationService {
 						 }
 		 }
 		
+}
+			else
+			{
+				taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
+						timeBasedExemptionMasterMap,
+						RequestInfoWrapper.builder().requestInfo(request.getRequestInfo()).build());	
+			}
 
 		Map<String, List> estimatesAndBillingSlabs = new HashMap<>();
 		estimatesAndBillingSlabs.put("estimates", taxHeadEstimates);
