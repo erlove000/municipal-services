@@ -54,7 +54,7 @@ System.out.println("Value of connectionCategory: " + valueOfConnectionCategory);
 				errorMap.put("INVALID_WATER_SOURCE", "WaterConnection cannot be created  without water source");
 			}
 			
-			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("ILLCON")){
+			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 				errorMap.put("INVALID_ROAD_INFO", "Road Cutting Information should not be empty");
 			}
 			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() != null){
@@ -73,16 +73,16 @@ System.out.println("Value of connectionCategory: " + valueOfConnectionCategory);
 		if (WCConstants.APPROVE_CONNECTION_CONST
 				.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction())) {
 
-			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("ILLCON")){
+			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 				errorMap.put("INVALID_ROAD_INFO", "Road Cutting Information should not be empty");
 			}
 
-			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() != null && !valueOfConnectionCategory.equalsIgnoreCase("ILLCON")){
+			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() != null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 				for(RoadCuttingInfo roadCuttingInfo : waterConnectionRequest.getWaterConnection().getRoadCuttingInfo()){
 					if(StringUtils.isEmpty(roadCuttingInfo.getRoadType())){
 						errorMap.put("INVALID_ROAD_TYPE", "Road type should not be empty");
 					}
-					if(roadCuttingInfo.getRoadCuttingArea() == null && !valueOfConnectionCategory.equalsIgnoreCase("ILLCON")){
+					if(roadCuttingInfo.getRoadCuttingArea() == null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 						errorMap.put("INVALID_ROAD_CUTTING_AREA", "Road cutting area should not be empty");
 					}
 				}
