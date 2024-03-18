@@ -43,7 +43,7 @@ for (String pair : keyValuePairs) {
         break;
     }
 }
-
+valueOfConnectionCategory = valueOfConnectionCategory.replaceAll("\\s", "");
 System.out.println("Value of connectionCategory: " + valueOfConnectionCategory);
 		if (WCConstants.ACTIVATE_CONNECTION_CONST
 				.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction())) {
