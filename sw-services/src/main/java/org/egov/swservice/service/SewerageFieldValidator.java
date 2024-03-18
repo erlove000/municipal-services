@@ -31,6 +31,22 @@ public class SewerageFieldValidator implements SewerageActionValidator {
 	}
 
 	public void validateUpdateRequest(SewerageConnectionRequest sewerageConnectionRequest, Map<String, String> errorMap) {
+		String jsonString = sewerageConnectionRequest.getSewerageConnection().getAdditionalDetails().toString();
+System.out.println(jsonString);
+
+String[] keyValuePairs = jsonString.substring(1, jsonString.length() - 1).split(", "); // Remove the curly braces and split by comma followed by a space
+
+String valueOfConnectionCategory = null;
+
+for (String pair : keyValuePairs) {
+    String[] keyValue = pair.split("=");
+    if (keyValue[0].equals("connectionCategory")) {
+        valueOfConnectionCategory = keyValue[1];
+        break;
+    }
+}
+
+System.out.println("Value of connectionCategory: " + valueOfConnectionCategory);
 		if (SWConstants.ACTIVATE_CONNECTION_CONST.equalsIgnoreCase(
 				sewerageConnectionRequest.getSewerageConnection().getProcessInstance().getAction())) {
 			if (StringUtils.isEmpty(sewerageConnectionRequest.getSewerageConnection().getConnectionType())) {
@@ -44,16 +60,16 @@ public class SewerageFieldValidator implements SewerageActionValidator {
 		}
 		if (SWConstants.APPROVE_CONNECTION_CONST.equalsIgnoreCase(
 				sewerageConnectionRequest.getSewerageConnection().getProcessInstance().getAction())) {
-			if(sewerageConnectionRequest.getSewerageConnection().getRoadCuttingInfo() == null){
+			if(sewerageConnectionRequest.getSewerageConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 				errorMap.put("INVALID_ROAD_INFO", "Road Cutting Information should not be empty");
 			}
 
-			if(sewerageConnectionRequest.getSewerageConnection().getRoadCuttingInfo() != null){
+			if(sewerageConnectionRequest.getSewerageConnection().getRoadCuttingInfo() != null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 				for(RoadCuttingInfo roadCuttingInfo : sewerageConnectionRequest.getSewerageConnection().getRoadCuttingInfo()){
 					if(StringUtils.isEmpty(roadCuttingInfo.getRoadType())){
 						errorMap.put("INVALID_ROAD_TYPE", "Road type should not be empty");
 					}
-					if(roadCuttingInfo.getRoadCuttingArea() == null){
+					if(roadCuttingInfo.getRoadCuttingArea() == null && !valueOfConnectionCategory.equalsIgnoreCase("REGULARIZED")){
 						errorMap.put("INVALID_ROAD_CUTTING_AREA", "Road cutting area should not be empty");
 					}
 				}
