@@ -54,7 +54,7 @@ System.out.println("Value of connectionCategory: " + valueOfConnectionCategory);
 				errorMap.put("INVALID_WATER_SOURCE", "WaterConnection cannot be created  without water source");
 			}
 			
-			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && valueOfConnectionCategory!="ILLCON"){){
+			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() == null && !valueOfConnectionCategory.equalsIgnoreCase("ILLCON")){
 				errorMap.put("INVALID_ROAD_INFO", "Road Cutting Information should not be empty");
 			}
 			if(waterConnectionRequest.getWaterConnection().getRoadCuttingInfo() != null){
