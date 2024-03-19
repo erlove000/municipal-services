@@ -504,6 +504,18 @@ public class EstimationService {
 		BigDecimal tax = totalCharge.multiply(taxAndCessPercentage.divide(SWCalculationConstant.HUNDRED));
 		//
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
+		BigDecimal otherCharges=BigDecimal.ZERO;
+		HashMap<String, Object> additionalDetails = mapper.convertValue(criteria.getSewerageConnection().getAdditionalDetails(),
+				HashMap.class);
+		if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
+
+			  if (!(otherCharges.compareTo(BigDecimal.ZERO) == 0))
+				  estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
+
+
+
+		}
+		else {
 		if (!(formFee.compareTo(BigDecimal.ZERO) == 0))
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_FORM_FEE)
 					.estimateAmount(formFee.setScale(2, 2)).build());
@@ -515,6 +527,11 @@ public class EstimationService {
 		 * estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.
 		 * SW_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
 		 */
+		
+		 if (!(otherCharges.compareTo(BigDecimal.ZERO) == 0))
+			  estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
+
+
 		if (!(roadCuttingCharge.compareTo(BigDecimal.ZERO) == 0))
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_ROAD_CUTTING_CHARGE)
 					.estimateAmount(roadCuttingCharge.setScale(2, 2)).build());
@@ -530,9 +547,12 @@ public class EstimationService {
 		if (!(tax.compareTo(BigDecimal.ZERO) == 0))
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_TAX_AND_CESS)
 					.estimateAmount(tax.setScale(2, 2)).build());
+		}
 		addAdhocPenaltyAndRebate(estimates, criteria.getSewerageConnection());
 		return estimates;
 	}
+		
+			
 
 	/**
 	 * Enrich the adhoc penalty and adhoc rebate
@@ -545,6 +565,18 @@ public class EstimationService {
 		if (connection.getAdditionalDetails() != null) {
 			HashMap<String, Object> additionalDetails = mapper.convertValue(connection.getAdditionalDetails(),
 					HashMap.class);
+			if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
+
+				if (additionalDetails.getOrDefault(SWCalculationConstant.OTHER_FEE_CONST, null) != null) {
+					estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.OTHER_FEE)
+							.estimateAmount(
+									new BigDecimal(additionalDetails.get(SWCalculationConstant.OTHER_FEE_CONST).toString()))
+							.build());
+				}
+			}
+		
+
+			else {
 			if (additionalDetails.getOrDefault(SWCalculationConstant.ADHOC_PENALTY, null) != null) {
 				estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_ADHOC_PENALTY)
 						.estimateAmount(
@@ -565,12 +597,14 @@ public class EstimationService {
 								additionalDetails.get(SWCalculationConstant.COMPOSITION_FEE_CONST).toString()))
 						.build());
 			}
+			System.out.println(additionalDetails.get(SWCalculationConstant.connectionCategory).toString());
 			if (additionalDetails.getOrDefault(SWCalculationConstant.USER_CHARGES_CONST, null) != null) {
 				estimates
 						.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.USER_CHARGES)
 								.estimateAmount(new BigDecimal(
 										additionalDetails.get(SWCalculationConstant.USER_CHARGES_CONST).toString()))
 								.build());
+				
 			}
 
 			if (additionalDetails.getOrDefault(SWCalculationConstant.OTHER_FEE_CONST, null) != null) {
@@ -578,6 +612,7 @@ public class EstimationService {
 						.estimateAmount(
 								new BigDecimal(additionalDetails.get(SWCalculationConstant.OTHER_FEE_CONST).toString()))
 						.build());
+			}
 			}
 		}
 	}
