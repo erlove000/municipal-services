@@ -461,8 +461,8 @@ public class EstimationService {
 
 		
 		BigDecimal otherCharges = BigDecimal.ZERO; 
-		if(feeObj.get(SWCalculationConstant.OTHER_CHARGE_CONST) != null) {
-			otherCharges = new BigDecimal(feeObj.getAsNumber(SWCalculationConstant.OTHER_CHARGE_CONST).toString());
+		if(feeObj.get(SWCalculationConstant.OTHER_FEE_CONST) != null) {
+			otherCharges = new BigDecimal(feeObj.getAsNumber(SWCalculationConstant.OTHER_FEE_CONST).toString());
 		}
 		 
 		BigDecimal taxAndCessPercentage = BigDecimal.ZERO;
