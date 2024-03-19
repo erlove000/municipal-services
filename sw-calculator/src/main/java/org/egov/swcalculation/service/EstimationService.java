@@ -459,13 +459,12 @@ public class EstimationService {
 			connectionFee=connectionFeeApplicable;
 		}
 
-		/*
-		 * BigDecimal otherCharges = BigDecimal.ZERO; if
-		 * (feeObj.get(SWCalculationConstant.OTHER_CHARGE_CONST) != null) { otherCharges
-		 * = new
-		 * BigDecimal(feeObj.getAsNumber(SWCalculationConstant.OTHER_CHARGE_CONST).
-		 * toString()); }
-		 */
+		
+		BigDecimal otherCharges = BigDecimal.ZERO; 
+		if(feeObj.get(SWCalculationConstant.OTHER_CHARGE_CONST) != null) {
+			otherCharges = new BigDecimal(feeObj.getAsNumber(SWCalculationConstant.OTHER_CHARGE_CONST).toString());
+		}
+		 
 		BigDecimal taxAndCessPercentage = BigDecimal.ZERO;
 		if (feeObj.get(SWCalculationConstant.TAX_PERCENTAGE_CONST) != null) {
 			taxAndCessPercentage = new BigDecimal(
@@ -499,7 +498,7 @@ public class EstimationService {
 //					criteria.getSewerageConnection().getRoadCuttingArea());
 //		}
 
-		BigDecimal totalCharge = formFee.add(securityDeposit).add(roadCuttingCharge).add(connectionFee);
+		BigDecimal totalCharge = formFee.add(securityDeposit).add(roadCuttingCharge).add(connectionFee).add(otherCharges);
 //				.add(meterCost).add(roadPlotCharge).add(usageTypeCharge);
 		BigDecimal tax = totalCharge.multiply(taxAndCessPercentage.divide(SWCalculationConstant.HUNDRED));
 		//
