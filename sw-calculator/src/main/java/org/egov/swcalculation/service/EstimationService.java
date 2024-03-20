@@ -503,7 +503,7 @@ public class EstimationService {
 		BigDecimal tax = totalCharge.multiply(taxAndCessPercentage.divide(SWCalculationConstant.HUNDRED));
 		//
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
-		BigDecimal otherCharges=BigDecimal.ZERO;
+		//BigDecimal otherCharges=BigDecimal.ZERO;
 		HashMap<String, Object> additionalDetails = mapper.convertValue(criteria.getSewerageConnection().getAdditionalDetails(),
 				HashMap.class);
 		if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
