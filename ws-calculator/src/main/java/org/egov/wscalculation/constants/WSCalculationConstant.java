@@ -267,7 +267,9 @@ public class WSCalculationConstant {
 	public static final String  COMPOSITION_FEE= "WS_COMPOSITION_FEE";
 	
 	public static final String COMPOSITION_FEE_CONST = "compositionFee";
-
+	
+        public static final String connectionCategory = "connectionCategory";
+	
 	public static final String  USER_CHARGES_CONST = "userCharges";
 	
 	public static final String  USER_CHARGES = "WS_USER_CHARGE";
