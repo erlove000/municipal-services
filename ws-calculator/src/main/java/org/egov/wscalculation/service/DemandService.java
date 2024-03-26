@@ -2,12 +2,8 @@ package org.egov.wscalculation.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,13 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+4import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.User;
 import org.egov.tracer.model.CustomException;
@@ -72,6 +66,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
+
+import java.util.stream.Stream;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Slf4j
@@ -230,6 +231,22 @@ public class DemandService {
 				else
 					updateDemands.add(createDemandForNonMeteredInBulk(request.getRequestInfo(), calculation, masterMap, isForConnectionNo,
 							toDateSearch, toDateSearch));
+
+				if(tenantId.equals("pb.amritsar")) {
+					List<String> usageCategory = waterCalculatorDao.fetchUsageCategory(consumerCodes);
+					if(usageCategory.size()>0) {
+						if(usageCategory.get(0).equals("NONRESIDENTIAL.COMMERCIAL")) {							
+							List<String> sewConsumerList = waterCalculatorDao.fetchSewConnection(consumerCodes);
+							if(sewConsumerList.size()>0) {
+								sewConsumerCode=sewConsumerList.get(0);
+								calculation.setConnectionNo(sewConsumerCode);
+								 sewDemands.add(createDemandForNonMeteredInBulkSew(request.getRequestInfo(), calculation, masterMap, isForConnectionNo,
+											fromDateSearch, toDateSearch));
+								 createDemands.addAll(sewDemands);
+							}
+						}						
+					}
+				}				
 			}
 		}
 
@@ -415,6 +432,67 @@ public class DemandService {
 		return demand;
 	}
 
+
+	/**
+	 * 
+	 * @param requestInfo  RequestInfo
+	 * @param calculations List of Calculation
+	 * @param masterMap    Master MDMS Data
+	 * @return Returns list of demands
+	 */
+	private Demand createDemandForNonMeteredInBulkSew(RequestInfo requestInfo, Calculation calculation,
+			Map<String, Object> masterMap, boolean isForConnectionNO, long taxPeriodFrom, long taxPeriodTo) {
+
+			WaterConnection connection = calculation.getWaterConnection();
+			if (connection == null) {
+				throw new CustomException("INVALID_WATER_CONNECTION",
+						"Demand cannot be generated for "
+								+ (isForConnectionNO ? calculation.getConnectionNo() : calculation.getApplicationNO())
+								+ " Sew Connection with this number does not exist ");
+			}
+			WaterConnectionRequest waterConnectionRequest = WaterConnectionRequest.builder().waterConnection(connection)
+					.requestInfo(requestInfo).build();
+			
+			log.info("sewConnectionRequest: {}",waterConnectionRequest);
+			Property property = wsCalculationUtil.getProperty(waterConnectionRequest);
+			log.info("Property: {}",property);
+			
+			String tenantId = calculation.getTenantId();
+			String consumerCode = isForConnectionNO ? calculation.getConnectionNo() : calculation.getApplicationNO();
+			User owner = property.getOwners().get(0).toCommonUser();
+			if (!CollectionUtils.isEmpty(waterConnectionRequest.getWaterConnection().getConnectionHolders())) {
+				owner = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).toCommonUser();
+			}
+			List<DemandDetail> demandDetails = new LinkedList<>();
+			
+			calculation.getTaxHeadEstimates().forEach(taxHeadEstimate -> {
+				demandDetails.add(DemandDetail.builder().taxAmount(taxHeadEstimate.getEstimateAmount())
+						.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).collectionAmount(BigDecimal.ZERO)
+						.tenantId(tenantId).build());
+			});
+			@SuppressWarnings("unchecked")
+			Map<String, Object> financialYearMaster = (Map<String, Object>) masterMap
+					.get(WSCalculationConstant.BILLING_PERIOD);
+
+			if (taxPeriodFrom == 0 && taxPeriodTo == 0) {
+				taxPeriodFrom = (Long) financialYearMaster.get(WSCalculationConstant.STARTING_DATE_APPLICABLES);
+				taxPeriodTo = (Long) financialYearMaster.get(WSCalculationConstant.ENDING_DATE_APPLICABLES);
+			}
+			Long expiryDaysInmillies = (Long) financialYearMaster.get(WSCalculationConstant.Demand_Expiry_Date_String);
+			//Long expiryDate = System.currentTimeMillis() + expiryDaysInmillies;
+
+			BigDecimal minimumPayableAmount = calculation.getTotalAmount();
+			String businessService = "SW";
+
+			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
+			Demand demand = Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
+						.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(taxPeriodFrom)
+						.taxPeriodTo(taxPeriodTo).consumerType("waterConnection").businessService(businessService)
+						.status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDaysInmillies).build();
+			
+		return demand;
+	}
+	
 
 	/**
 	 * Returns the list of new DemandDetail to be added for updating the demand
