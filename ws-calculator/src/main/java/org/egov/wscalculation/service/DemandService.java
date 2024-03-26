@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-4import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.User;
 import org.egov.tracer.model.CustomException;
@@ -199,9 +199,10 @@ public class DemandService {
 	 */
 	public List<Demand> generateDemandForBillingCycleInBulk(CalculationReq request, List<Calculation> calculations,
 			Map<String, Object> masterMap, boolean isForConnectionNo) {
-
-		boolean isDemandAvailable = false;
+boolean isDemandAvailable = false;
+		String sewConsumerCode= "";
 		List<Demand> createDemands = new ArrayList<>();
+		List<Demand> sewDemands = new ArrayList<>();
 		List<Demand> updateDemands = new ArrayList<>();
 		List<Demand> demandRes = new ArrayList<>();
 
@@ -225,13 +226,15 @@ public class DemandService {
 
 				log.info("isDemandAvailable: {} for consumercode: {}, taxperiod from: {} and To: {}", isDemandAvailable, consumerCodes, fromDateSearch, toDateSearch);
 				// If demand already exists add it updateCalculations else
-				if (!isDemandAvailable)
+				if (!isDemandAvailable) {
 					createDemands.add(createDemandForNonMeteredInBulk(request.getRequestInfo(), calculation, masterMap, isForConnectionNo,
 							fromDateSearch, toDateSearch));
-				else
+				   
+				}else {
 					updateDemands.add(createDemandForNonMeteredInBulk(request.getRequestInfo(), calculation, masterMap, isForConnectionNo,
 							toDateSearch, toDateSearch));
-
+				}
+				
 				if(tenantId.equals("pb.amritsar")) {
 					List<String> usageCategory = waterCalculatorDao.fetchUsageCategory(consumerCodes);
 					if(usageCategory.size()>0) {
@@ -246,10 +249,10 @@ public class DemandService {
 							}
 						}						
 					}
-				}				
-			}
-		}
-
+				}
+				}
+		        }
+		       
 		//Save the bulk demands for metered connections
 		if (!createDemands.isEmpty()) {
 			log.info("Creating Non metered Demands list size: {} and Demand Object: {}" , createDemands.size(), mapper.writeValueAsString(createDemands));
@@ -267,6 +270,7 @@ public class DemandService {
 		}
 
 		return demandRes;
+		
 	}
 
 	/**
