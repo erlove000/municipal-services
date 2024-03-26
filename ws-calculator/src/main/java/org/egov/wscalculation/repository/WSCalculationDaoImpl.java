@@ -177,4 +177,26 @@ List<WaterDetails> waterDetails=jdbcTemplate.query(query,preparedStatement.toArr
 		
 		return jdbcTemplate.queryForObject(query, preparedStatement.toArray(), Boolean.class);
 	}
+	@Override
+	public List<String> fetchUsageCategory(String consumerCodes) {		
+		List<Object> preparedStatement = new ArrayList<>();
+		String queryString = "select a2.usagecategory from eg_ws_connection a1 inner join eg_pt_property a2 on a1.property_id= a2.propertyid"
+				+ " where a1.connectionno = '"+consumerCodes+"'";
+		log.info("preparedStatement: " + preparedStatement + " query : " + queryString);
+		return jdbcTemplate.queryForList(queryString, preparedStatement.toArray(), String.class);
+	}
+	@Override
+	public List<String> fetchSewConnection(String consumerCodes) {
+		List<Object> preparedStatement = new ArrayList<>();
+		String queryString = "select a1.connectionno from eg_sw_connection a1 inner join eg_pt_property a2 on a1.property_id= a2.propertyid"+ 
+				" where a1.property_id in (select property_id from eg_ws_connection where connectionno ='"+consumerCodes+"')";
+		log.info("preparedStatement: " + preparedStatement + " query : " + queryString);
+		return jdbcTemplate.queryForList(queryString, preparedStatement.toArray(), String.class);
+	}
+
+
+
+
+
+	
 }
