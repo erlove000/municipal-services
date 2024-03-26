@@ -33,6 +33,7 @@ public interface WSCalculationDao {
 	Long searchLastDemandGenFromDate(String consumerCode, String tenantId);
 	
 	Boolean isConnectionDemandAvailableForBillingCycle(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, String consumerCode); 
-
+	List<String> fetchUsageCategory(String consumerCodes);
+	List<String> fetchSewConnection(String consumerCodes); 
 
 }
