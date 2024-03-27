@@ -209,6 +209,14 @@ public class WsQueryBuilder {
 			query.append(" conn.locality = ? ");
 			preparedStatement.add(criteria.getLocality());
 		}
+		if(criteria.getConnectionType().equalsIgnoreCase("METERED")) {
+			if (!StringUtils.isEmpty(criteria.getConnectionType())) {
+				addClauseIfRequired(preparedStatement, query);
+				query.append(" wc.connectiontype = ? ");
+				preparedStatement.add(criteria.getConnectionType());
+			}
+		}
+	
 		query.append(ORDER_BY_CLAUSE);
 		log.info("Search Query Created After All the Checks :::"+ query);
 		return addPaginationWrapper(query.toString(), preparedStatement, criteria);
