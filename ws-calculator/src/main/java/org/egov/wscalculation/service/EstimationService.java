@@ -135,6 +135,21 @@ public class EstimationService {
 		// water_charge
 		estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_CHARGE)
 				.estimateAmount(waterCharge.setScale(2, 2)).build());
+		/// DISPOSAL DISCHARGE CHARGES
+		HashMap<String,String> add_details= ((HashMap<String,String>)connection.getAdditionalDetails());
+		if(add_details.containsKey("dischargeConnection"))
+		{
+			
+			if(add_details.get("dischargeConnection").equalsIgnoreCase("true"))
+			{
+				BigDecimal disposal_charge=new BigDecimal(200.0);
+				estimates.add(TaxHeadEstimate.builder().taxHeadCode("WS_DISCHARGE_CHARGES")
+						.estimateAmount(disposal_charge.setScale(2, 2)).build());
+			}
+		}
+		
+		
+		
 
 		// Water_cess
 		/*
