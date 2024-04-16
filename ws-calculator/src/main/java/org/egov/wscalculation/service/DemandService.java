@@ -287,7 +287,8 @@ boolean isDemandAvailable = false;
 		List<Demand> demandRes = new LinkedList<>();
 		List<Demand> demandReq = new LinkedList<>();
 		List<Demand> demandsForMetered = new LinkedList<>();
-
+		String sewConsumerCode= "";
+		String businessServices= "";
 		for (Calculation calculation : calculations) {
 			WaterConnection connection = calculation.getWaterConnection();
 			if (connection == null) {
@@ -352,6 +353,23 @@ boolean isDemandAvailable = false;
 			// For the metered connections demand has to create one by one
 			if (WSCalculationConstant.meteredConnectionType.equalsIgnoreCase(connection.getConnectionType())) {
 				demandsForMetered.add(demand);
+				if(demand.getTenantId().equalsIgnoreCase("pb.amritsar")) {
+					List<String> usageCategory = waterCalculatorDao.fetchUsageCategory(demand.getConsumerCode());
+					if(usageCategory.size()>0) {
+						if(usageCategory.get(0).equals("NONRESIDENTIAL.COMMERCIAL")) {							
+							List<String> sewConsumerList = waterCalculatorDao.fetchSewConnection(demand.getConsumerCode());
+							if(sewConsumerList.size()>0) {
+								sewConsumerCode=sewConsumerList.get(0);								
+							}
+						}						
+					}				
+					businessServices ="SW";
+					Demand demand1 = Demand.builder().consumerCode(sewConsumerCode).demandDetails(demandDetails).payer(owner)
+							.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(taxPeriodFrom)
+							.taxPeriodTo(taxPeriodTo).consumerType("sewerageConnection").businessService(businessServices)
+							.status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDaysInmillies).additionalDetails(additionalDetail).build();
+					demandsForMetered.add(demand1);
+				}
 				
 			} else {
 				demandReq.add(demand);
