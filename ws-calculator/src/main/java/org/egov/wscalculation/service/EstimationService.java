@@ -149,7 +149,7 @@ public class EstimationService {
 		if(add_details.containsKey("dischargeConnection"))
 		{
 			
-			if(add_details.get("dischargeConnection").equalsIgnoreCase("true"))
+			if(add_details.get("dischargeConnection").equalsIgnoreCase("true") || add_details.get("dischargeConnection").equalsIgnoreCase("OnlyDischarge"))
 			{
 				BigDecimal disposal_charge=new BigDecimal(200.0);
 				estimates.add(TaxHeadEstimate.builder().taxHeadCode("WS_DISCHARGE_CHARGES")
