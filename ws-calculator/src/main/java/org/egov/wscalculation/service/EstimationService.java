@@ -132,11 +132,20 @@ public class EstimationService {
 	private List<TaxHeadEstimate> getEstimatesForTax(BigDecimal waterCharge, WaterConnection connection,
 			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper) {
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
-		// water_charge
-		estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_CHARGE)
-				.estimateAmount(waterCharge.setScale(2, 2)).build());
-		/// DISPOSAL DISCHARGE CHARGES
+
 		HashMap<String,String> add_details= ((HashMap<String,String>)connection.getAdditionalDetails());
+		// water_charge to be added only if dischargeConnection is not Onlydisposal (category 62 of Amritsar) means if the connection is only disposal that only discharge/disposal charges should be applicable
+		if(add_details.containsKey("dischargeConnection"))
+		{
+			if(add_details.get("dischargeConnection").equalsIgnoreCase("OnlyDischarge")==false)
+				estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_CHARGE)
+						.estimateAmount(waterCharge.setScale(2, 2)).build());
+		}
+		else
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_CHARGE)
+				.estimateAmount(waterCharge.setScale(2, 2)).build());
+			
+		/// DISPOSAL DISCHARGE CHARGES
 		if(add_details.containsKey("dischargeConnection"))
 		{
 			
