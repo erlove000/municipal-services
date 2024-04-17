@@ -311,6 +311,7 @@ boolean isDemandAvailable = false;
 				owner = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).toCommonUser();
 			}
 			List<DemandDetail> demandDetails = new LinkedList<>();
+			List<DemandDetail> demandDetails1 = new LinkedList<>();
 			calculation.getTaxHeadEstimates().forEach(taxHeadEstimate -> {
 				demandDetails.add(DemandDetail.builder().taxAmount(taxHeadEstimate.getEstimateAmount())
 						.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).collectionAmount(BigDecimal.ZERO)
@@ -364,7 +365,18 @@ boolean isDemandAvailable = false;
 						}						
 					}				
 					businessServices ="SW";
-					Demand demand1 = Demand.builder().consumerCode(sewConsumerCode).demandDetails(demandDetails).payer(owner)
+					for(DemandDetail ddSew : demandDetails) {
+						DemandDetail dd1  = new DemandDetail();
+						dd1.setTaxHeadMasterCode("SW_CHARGE");
+						dd1.setDemandId(ddSew.getDemandId());
+						dd1.setAuditDetails(ddSew.getAuditDetails());
+						dd1.setCollectionAmount(ddSew.getCollectionAmount());
+						dd1.setId(ddSew.getId());
+						dd1.setTaxAmount(ddSew.getTaxAmount());
+						dd1.setTenantId(ddSew.getTenantId());						
+						demandDetails1.add(dd1);
+					}
+					Demand demand1 = Demand.builder().consumerCode(sewConsumerCode).demandDetails(demandDetails1).payer(owner)
 							.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(taxPeriodFrom)
 							.taxPeriodTo(taxPeriodTo).consumerType("sewerageConnection").businessService(businessServices)
 							.status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDaysInmillies).additionalDetails(additionalDetail).build();
