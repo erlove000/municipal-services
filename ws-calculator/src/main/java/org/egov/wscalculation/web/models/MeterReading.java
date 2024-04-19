@@ -75,6 +75,7 @@ public class MeterReading {
 			}
 			return null;
 		}
+		
 	}
 
 	@JsonProperty("meterStatus")
@@ -113,6 +114,12 @@ public class MeterReading {
 		return this;
 	}
 
+	
+
+    public void setMeterStatus(MeterStatusEnum meterStatusEnum) {
+        this.meterStatus = MeterStatusEnum.valueOf(meterStatusEnum.name());
+    }
+	
 	/**
 	 * Unique Identifier of the meterreading for internal reference.
 	 *
@@ -189,9 +196,7 @@ public class MeterReading {
 		return meterStatus;
 	}
 
-	public void setMeterStatus(MeterStatusEnum meterStatus) {
-		this.meterStatus = meterStatus;
-	}
+	
 
 	public MeterReading lastReading(Double lastReading) {
 		this.lastReading = lastReading;
