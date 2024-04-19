@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.egov.wscalculation.web.models.AuditDetails;
 import org.egov.wscalculation.web.models.MeterConnectionRequest;
+import org.egov.wscalculation.web.models.MeterConnectionRequests;
+import org.egov.wscalculation.web.models.MeterReadingList;
 import org.springframework.stereotype.Service;
 
 @Service
