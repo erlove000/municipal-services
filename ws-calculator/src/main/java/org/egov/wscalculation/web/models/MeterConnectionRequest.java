@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Validated
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +26,6 @@ public class MeterConnectionRequest {
 	@JsonProperty("meterReadings")
 	@Valid
 	private MeterReading meterReading = null;
+	
+	
 }
