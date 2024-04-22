@@ -15,11 +15,13 @@ import org.egov.pt.models.PropertyCriteria;
 import org.egov.pt.models.oldProperty.OldPropertyCriteria;
 import org.egov.pt.service.MigrationService;
 import org.egov.pt.service.PropertyService;
+import org.egov.pt.util.NotificationUtil;
 import org.egov.pt.util.ResponseInfoFactory;
 import org.egov.pt.validator.PropertyValidator;
 import org.egov.pt.web.contracts.PropertyRequest;
 import org.egov.pt.web.contracts.PropertyResponse;
 import org.egov.pt.web.contracts.RequestInfoWrapper;
+import org.egov.pt.web.contracts.SMSRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/property")
 
 public class PropertyController {
+
+	@Autowired
+	private NotificationUtil notifUtil;
 
     @Autowired
     private PropertyService propertyService;
@@ -117,6 +122,18 @@ public class PropertyController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
+    
+    @RequestMapping(value = "/_sendOpenSMS", method = RequestMethod.POST)
+    public ResponseEntity<Integer> sendOpenSMS(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper)
+    {
+    	String msg="Dear OpenSMS, Status for your application no.OpenSMSApp for property OpenPid to OpenCreated property has been changed to OpenActivate. You can track your application on the link given below-https://mseva.lgpunjab.gov.in/employee/user/login Thank you|1301157492438182299|1407162859196626520";
+    	Map<String, String> mobileNumberToOwner = new HashMap<>();
+    	mobileNumberToOwner.put("9417630724", "gurpreet");
+    	List<SMSRequest> smsRequests = notifUtil.createSMSRequest(msg, mobileNumberToOwner);
+		notifUtil.sendSMS(smsRequests);
+		
+    	return new ResponseEntity<>(1,HttpStatus.OK);
+    }
     
 //	@RequestMapping(value = "/_cancel", method = RequestMethod.POST)
 //	public ResponseEntity<PropertyResponse> cancel(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
