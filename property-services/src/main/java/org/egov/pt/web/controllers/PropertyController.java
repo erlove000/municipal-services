@@ -23,6 +23,7 @@ import org.egov.pt.web.contracts.PropertyResponse;
 import org.egov.pt.web.contracts.RequestInfoWrapper;
 import org.egov.pt.web.contracts.SMSRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration.DslContextConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -125,13 +126,13 @@ public class PropertyController {
     
     
     @RequestMapping(value = "/_sendOpenSMS", method = RequestMethod.POST)
-    public ResponseEntity<Integer> sendOpenSMS(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam String msgParam)
+    public ResponseEntity<Integer> sendOpenSMS(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam String msgParam,@RequestParam String dlt_entity_id,@RequestParam String dlt_template_id)
     {
     	try
     	{
     		//String msg="Dear OpenSMS, Status for your application no.OpenSMSApp for property OpenPid to OpenCreated property has been changed to OpenActivate. You can track your application on the link given below-https://mseva.lgpunjab.gov.in/employee/user/login Thank you|1301157492438182299|1407162859196626520";
     	
-    	String msg=msgParam;
+    	String msg=msgParam+"|"+dlt_entity_id+"|"+dlt_template_id;
     	Map<String, String> mobileNumberToOwner = new HashMap<>();
     	mobileNumberToOwner.put("9417630724", "gurpreet");
     	List<SMSRequest> smsRequests = notifUtil.createSMSRequest(msg, mobileNumberToOwner);
