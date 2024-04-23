@@ -126,7 +126,7 @@ public class PropertyController {
     
     
     @RequestMapping(value = "/_sendOpenSMS", method = RequestMethod.POST)
-    public ResponseEntity<Integer> sendOpenSMS(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam String msgParam,@RequestParam String dlt_entity_id,@RequestParam String dlt_template_id)
+    public ResponseEntity<Integer> sendOpenSMS(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam String msgParam,@RequestParam String mobile_no,@RequestParam String dlt_entity_id,@RequestParam String dlt_template_id)
     {
     	try
     	{
@@ -134,7 +134,7 @@ public class PropertyController {
     	
     	String msg=msgParam+"|"+dlt_entity_id+"|"+dlt_template_id;
     	Map<String, String> mobileNumberToOwner = new HashMap<>();
-    	mobileNumberToOwner.put("9417630724", "gurpreet");
+    	mobileNumberToOwner.put(mobile_no, "openuser");
     	List<SMSRequest> smsRequests = notifUtil.createSMSRequest(msg, mobileNumberToOwner);
 		notifUtil.sendSMS(smsRequests);
 		return new ResponseEntity<>(1,HttpStatus.OK);
