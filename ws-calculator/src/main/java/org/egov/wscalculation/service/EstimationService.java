@@ -155,7 +155,7 @@ public class EstimationService {
 				try
 				{
 				if(add_details.containsKey("dischargeFee"))  // if dischargeFee attribute is present in additionalDetails then use give dischargeFee else fix dischagefee to 200
-					disposal_charge=new BigDecimal((add_details.get("dischargeFee"));
+					disposal_charge=new BigDecimal(add_details.get("dischargeFee"));
 				else
 					disposal_charge=new BigDecimal(200.0);
 				}
