@@ -11,6 +11,11 @@ import org.springframework.util.StringUtils;
 public class SWCalculatorQueryBuilder {
 	
 	private static final String connectionNoListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id";
+
+	
+	private static final String connectionNoNonCommercialListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate "
+			+ " FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id"
+			+ " inner join eg_pt_property pt on conn.property_id= pt.propertyid ";
 	
 	private static final String distinctTenantIdsCriteria = "SELECT distinct(tenantid) FROM eg_sw_connection sw";
 
@@ -77,6 +82,57 @@ public class SWCalculatorQueryBuilder {
 
 		return query.toString();
 	}
+
+
+	public String getConnectionNumberListForNonCommercial(String tenantId, String connectionType, String status, Long taxPeriodFrom, Long taxPeriodTo, String cone, List<Object> preparedStatement) {
+		StringBuilder query = new StringBuilder(connectionNoNonCommercialListQuery);
+		// Add connection type
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" sw.connectiontype = ? ");
+		preparedStatement.add(connectionType);
+
+		//Add status
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.status = ? ");
+		preparedStatement.add(status);
+
+		//Get the activated connections status	
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.applicationstatus = ? ");
+		preparedStatement.add(SWCalculationConstant.CONNECTION_ACTIVATED);
+
+
+		// add tenantid
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.tenantid = ? ");
+		preparedStatement.add(tenantId);
+
+
+		// add Not commercial for amritsar
+		addClauseIfRequired(preparedStatement, query);
+		query.append("pt.usagecategory != ? ");
+		preparedStatement.add("NONRESIDENTIAL.COMMERCIAL");
+
+		//Added connection number for testing Anonymous User issue
+//		addClauseIfRequired(preparedStatement, query);
+//		query.append(" conn.connectionno ='0603001817' ");
+
+		//Add not null condition
+		addClauseIfRequired(preparedStatement, query);
+		query.append(" conn.connectionno is not null");
+
+                if(cone!=null && cone!="")
+		{
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.connectionno = ? ");
+			preparedStatement.add(cone);
+		}
+
+		query.append(fetchConnectionsToBeGenerate(tenantId, taxPeriodFrom, taxPeriodTo, preparedStatement));
+		return query.toString();
+	}
+
+
 	
 	public String fetchConnectionsToBeGenerate(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, List<Object> preparedStatement) {
 		StringBuilder query = new StringBuilder(fiterConnectionBasedOnTaxPeriod);
