@@ -296,6 +296,8 @@ public class EstimationService {
 
 				} else if (waterConnection.getConnectionType()
 						.equalsIgnoreCase(WSCalculationConstant.nonMeterdConnection)) {
+					request.setTaxPeriodFrom(criteria.getFrom());
+					request.setTaxPeriodTo(criteria.getTo());
 						if (request.getTaxPeriodFrom() > 0 && request.getTaxPeriodTo() > 0) {
 						if (waterConnection.getConnectionExecutionDate() > request.getTaxPeriodFrom()) {
 							// Added pro rating
