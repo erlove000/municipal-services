@@ -221,6 +221,8 @@ public class EstimationService {
 
 				if (slabCondition) {
 					sewerageCharge = BigDecimal.valueOf((slab.getCharge()));
+					request.setTaxPeriodFrom(criteria.getFrom());
+					request.setTaxPeriodTo(criteria.getTo());
 					if (request.getTaxPeriodFrom() > 0 && request.getTaxPeriodTo() > 0) {
 						if (sewerageConnection.getConnectionExecutionDate() > request.getTaxPeriodFrom()) {
 							long milli_sec_btw_conn_date = Math.abs(request.getTaxPeriodTo() - sewerageConnection.getConnectionExecutionDate());
