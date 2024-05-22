@@ -523,8 +523,11 @@ public class EstimationService {
 		//BigDecimal otherCharges=BigDecimal.ZERO;
 		HashMap<String, Object> additionalDetails = mapper.convertValue(criteria.getSewerageConnection().getAdditionalDetails(),
 				HashMap.class);
-		if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
-
+		String concategory = additionalDetails.get(SWCalculationConstant.connectionCategory) != null 
+                ? additionalDetails.get(SWCalculationConstant.connectionCategory).toString() 
+                : "null";
+		// if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
+                if (concategory.equalsIgnoreCase("REGULARIZED")) {
 			  if (!(otherCharges.compareTo(BigDecimal.ZERO) == 0))
 				  estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.SW_OTHER_CHARGE) .estimateAmount(otherCharges.setScale(2, 2)).build());
 
@@ -576,7 +579,11 @@ public class EstimationService {
 		if (connection.getAdditionalDetails() != null) {
 			HashMap<String, Object> additionalDetails = mapper.convertValue(connection.getAdditionalDetails(),
 					HashMap.class);
-			if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
+			String concategory = additionalDetails.get(SWCalculationConstant.connectionCategory) != null 
+	                ? additionalDetails.get(SWCalculationConstant.connectionCategory).toString() 
+	                : "null";
+			if (concategory.equalsIgnoreCase("REGULARIZED")) {
+			// if (additionalDetails.get(SWCalculationConstant.connectionCategory).toString().equalsIgnoreCase("REGULARIZED")) {
 
 				if (additionalDetails.getOrDefault(SWCalculationConstant.OTHER_FEE_CONST, null) != null) {
 					estimates.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.OTHER_FEE)
@@ -608,7 +615,7 @@ public class EstimationService {
 								additionalDetails.get(SWCalculationConstant.COMPOSITION_FEE_CONST).toString()))
 						.build());
 			}
-				System.out.println(additionalDetails.get(SWCalculationConstant.connectionCategory).toString());
+				// System.out.println(additionalDetails.get(SWCalculationConstant.connectionCategory).toString());
 			if (additionalDetails.getOrDefault(SWCalculationConstant.USER_CHARGES_CONST, null) != null) {
 				estimates
 						.add(TaxHeadEstimate.builder().taxHeadCode(SWCalculationConstant.USER_CHARGES)
