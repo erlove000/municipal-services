@@ -430,8 +430,7 @@ public class EstimationService {
 		if(tenantid.equalsIgnoreCase("pb.patiala")) {
 			if (feeObj.get(SWCalculationConstant.SW_SECURITY_DEPOSIT_CONST) != null) {
 				if(connection_propertyType.contains("DOM") || connection_propertyType.contains("USAGE_RESIDENTIAL") )
-					securityDeposit = new BigDecimal(
-							feeObj.getAsNumber("1000.00").toString());
+					securityDeposit = new BigDecimal(1000.00);
 				else 
 					securityDeposit = new BigDecimal(
 							feeObj.getAsNumber(SWCalculationConstant.SW_SECURITY_DEPOSIT_CONST).toString());
