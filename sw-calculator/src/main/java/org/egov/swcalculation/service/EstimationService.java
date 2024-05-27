@@ -121,7 +121,19 @@ public class EstimationService {
 
 			if(add_details.get("dischargeConnection").equalsIgnoreCase("true"))
 			{
-				BigDecimal disposal_charge=new BigDecimal(200.0);
+				//BigDecimal disposal_charge=new BigDecimal(200.0);
+				BigDecimal disposal_charge;
+				try
+				{
+				if(add_details.containsKey("dischargeFee"))  // if dischargeFee attribute is present in additionalDetails then use give dischargeFee else fix dischagefee to 200
+					disposal_charge=new BigDecimal(add_details.get("dischargeFee"));
+				else
+					disposal_charge=new BigDecimal(200.0);
+				}
+				catch(Exception ex)
+				{
+					disposal_charge=new BigDecimal(200.0);
+				}
 				estimates.add(TaxHeadEstimate.builder().taxHeadCode("WS_DISCHARGE_CHARGES")
 						.estimateAmount(disposal_charge.setScale(2, 2)).build());
 			}
