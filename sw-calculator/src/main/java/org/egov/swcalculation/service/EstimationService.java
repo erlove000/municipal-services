@@ -244,7 +244,8 @@ public class EstimationService {
 						    long days_quarter = TimeUnit.MILLISECONDS.toDays(milli_sec_btw_quarter) + 1;
 	
 							//sewerageCharge = BigDecimal.valueOf((totalUnits * slab.getCharge() * daysDifference));
-							sewerageCharge = sewerageCharge.add(BigDecimal.valueOf(days_conn_date * (slab.getCharge() / days_quarter)).setScale(2, 2));
+							//sewerageCharge = sewerageCharge.add(BigDecimal.valueOf(days_conn_date * (slab.getCharge() / days_quarter)).setScale(2, 2));
+							sewerageCharge = BigDecimal.valueOf(days_conn_date * (slab.getCharge() / days_quarter)).setScale(2, 2);
 						}
 
 					}
