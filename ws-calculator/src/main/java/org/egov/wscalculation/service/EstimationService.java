@@ -307,7 +307,8 @@ public class EstimationService {
 						    long days_conn_date = TimeUnit.MILLISECONDS.toDays(milli_sec_btw_conn_date) + 1;
 						    long days_quarter = TimeUnit.MILLISECONDS.toDays(milli_sec_btw_quarter) + 1;
 
-							waterCharge = waterCharge.add(BigDecimal.valueOf(days_conn_date * (filteredSlabs.get(0).getCharge() / days_quarter)).setScale(2, 2));
+							// waterCharge = waterCharge.add(BigDecimal.valueOf(days_conn_date * (filteredSlabs.get(0).getCharge() / days_quarter)).setScale(2, 2));
+							waterCharge = BigDecimal.valueOf(days_conn_date * (filteredSlabs.get(0).getCharge() / days_quarter)).setScale(2, 2);
 //							double daysFactor = ((request.getTaxPeriodTo() - waterConnection.getConnectionExecutionDate())
 //									/ (request.getTaxPeriodTo() - request.getTaxPeriodFrom())); 
 //							waterCharge = waterCharge
