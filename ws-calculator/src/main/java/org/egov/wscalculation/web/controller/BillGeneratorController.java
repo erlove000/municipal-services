@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.egov.wscalculation.repository.WSCalculationDao;
 import org.egov.wscalculation.service.BillGeneratorService;
 import org.egov.wscalculation.util.ResponseInfoFactory;
 import org.egov.wscalculation.validator.BillGenerationValidator;
@@ -41,13 +42,33 @@ public class BillGeneratorController {
 	@Autowired
 	private BillGenerationValidator billGenerationValidator;
 
+	@Autowired
+	private WSCalculationDao waterCalculatorDao;
+
 	@PostMapping("/scheduler/_create")
 	public ResponseEntity<BillSchedulerResponse> billSchedulerCreate(
 			@Valid @RequestBody BillGenerationReq billGenerationReq) {
 
-		billGenerationValidator.validateBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
-		List<BillScheduler> billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
-		BillSchedulerResponse response = BillSchedulerResponse.builder().billSchedulers(billDetails)
+		BillSchedulerResponse response=new BillSchedulerResponse();
+		List<BillScheduler> billDetails1 = new ArrayList<BillScheduler>();
+		boolean isBatch=billGenerationReq.getBillScheduler().isBatch();
+		System.out.println("isBatch value"+isBatch);
+		
+		if(isBatch) {		
+			List<String> listOfLocalities = waterCalculatorDao.getLocalityList(billGenerationReq.getBillScheduler().getTenantId(),billGenerationReq.getBillScheduler().getLocality());
+			for(String localityName : listOfLocalities) {		
+				billGenerationReq.getBillScheduler().setLocality(localityName);			
+				billGenerationValidator.validateBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
+				List<BillScheduler> billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
+				billDetails1.addAll(billDetails);
+		}
+		}else {
+					billGenerationValidator.validateBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
+					List<BillScheduler> billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
+				    billDetails1.addAll(billDetails);
+			}
+
+		 response = BillSchedulerResponse.builder().billSchedulers(billDetails1)
 				.responseInfo(
 						responseInfoFactory.createResponseInfoFromRequestInfo(billGenerationReq.getRequestInfo(), true))
 				.build();
