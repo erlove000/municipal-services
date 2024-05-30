@@ -157,6 +157,15 @@ List<WaterDetails> waterDetails=jdbcTemplate.query(query,preparedStatement.toArr
 		log.info("preparedStatement: " + preparedStatement + " query : " + query);
 		return jdbcTemplate.queryForList(query, preparedStatement.toArray(), String.class);
 	}
+
+	@Override
+	public List<String> getLocalityList(String tenantId,String batchCode ) {
+		List<Object> preparedStatement = new ArrayList<>();
+		String query = queryBuilder.getLocalityListWithBatch(tenantId,batchCode,preparedStatement);
+		log.info("batchCode " + batchCode + " Locality list : " + query);
+		return jdbcTemplate.queryForList(query, preparedStatement.toArray(), String.class);
+	}
+	
 	@Override
 	public Long searchLastDemandGenFromDate(String consumerCode, String tenantId) {
 		List<Object> preparedStatement = new ArrayList<>();
