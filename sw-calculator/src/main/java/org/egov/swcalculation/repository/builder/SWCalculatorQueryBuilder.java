@@ -12,6 +12,7 @@ public class SWCalculatorQueryBuilder {
 	
 	private static final String connectionNoListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id";
 
+	private static final String LocalityListAsPerBatchQuery = "SELECT distinct(localitycode) FROM eg_bndry_mohalla conn";
 	
 	private static final String connectionNoNonCommercialListQuery = "SELECT distinct(conn.connectionno),sw.connectionexecutiondate "
 			+ " FROM eg_sw_connection conn INNER JOIN eg_sw_service sw ON conn.id = sw.connection_id"
@@ -337,4 +338,21 @@ public class SWCalculatorQueryBuilder {
 		
 		return query.toString();
 	}
+	
+	public String getLocalityListWithBatch(String tenantId, String batchCode, List<Object> preparedStatement) {
+		StringBuilder query = new StringBuilder(LocalityListAsPerBatchQuery);
+		// add batchcode
+				addClauseIfRequired(preparedStatement, query);
+				query.append(" conn.blockcode = ? ");
+				preparedStatement.add(batchCode);				
+				// add tenantid
+				addClauseIfRequired(preparedStatement, query);
+				query.append(" conn.tenantid = ? ");
+				preparedStatement.add(tenantId);
+	
+		return query.toString();
+	}
+
+
+	
 }
