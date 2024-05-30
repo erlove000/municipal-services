@@ -52,10 +52,13 @@ public class BillGeneratorController {
 
 		BillSchedulerResponse response=new BillSchedulerResponse();
 		List<BillScheduler> billDetails1 = new ArrayList<BillScheduler>();
-		boolean isBatch=billGenerationReq.getBillScheduler().isBatch();
-		System.out.println("isBatch value"+isBatch);
-		
-		if(isBatch) {		
+		String isBatch=billGenerationReq.getBillScheduler().getIsBatch();
+        	System.out.println("isBatch value"+isBatch);
+        	boolean batchBilling=false;
+		if(isBatch.equals("true")) {
+			batchBilling = true;
+		}
+        	if(batchBilling) {			
 			List<String> listOfLocalities = waterCalculatorDao.getLocalityList(billGenerationReq.getBillScheduler().getTenantId(),billGenerationReq.getBillScheduler().getLocality());
 			for(String localityName : listOfLocalities) {		
 				billGenerationReq.getBillScheduler().setLocality(localityName);			
