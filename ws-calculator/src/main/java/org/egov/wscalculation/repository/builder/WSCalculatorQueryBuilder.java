@@ -190,7 +190,7 @@ public class WSCalculatorQueryBuilder {
 		
 		//Get the activated connections status	
 		addClauseIfRequired(preparedStatement, query);
-		query.append(" (conn.applicationstatus = ?  or conn.applicationstatus = ?");
+		query.append(" (conn.applicationstatus = ?  or conn.applicationstatus = ?)");
 		preparedStatement.add(WSCalculationConstant.CONNECTION_ACTIVATED);
 		preparedStatement.add(WSCalculationConstant.MODIFIED_APPROVED);
 		
