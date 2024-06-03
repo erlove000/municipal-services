@@ -35,4 +35,8 @@ public interface WSCalculationDao {
 	Boolean isConnectionDemandAvailableForBillingCycle(String tenantId, Long taxPeriodFrom, Long taxPeriodTo, String consumerCode); 
 
 	List<String> getLocalityList(String tenantId, String locality); 
+
+	List<String> fetchUsageCategory(String consumerCodes);
+	List<String> fetchSewConnection(String consumerCodes); 
+	void updateBillStatus(List<String> consumerCodes, String string, String string2);
 }
