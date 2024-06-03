@@ -51,6 +51,8 @@ public class WSCalculatorQueryBuilder {
 	
 	private static final String isConnectionDemandAvailableForBillingCycle ="select EXISTS (select 1 from egbs_demand_v1 d ";
 
+	public static final String BILL_STATUS_UPDATE_QUERY = "UPDATE egbs_bill_v1 SET status=? WHERE status='ACTIVE' ";
+	
 	public static final String EG_WS_BILL_SCHEDULER_CONNECTION_STATUS_INSERT = "INSERT INTO eg_ws_bill_scheduler_connection_status "
 							+ "(id, eg_ws_scheduler_id, locality, module, createdtime, lastupdatedtime, status, tenantid, reason, consumercode) "
 							+ "VALUES (?,?,?,?,?,?,?,?,?,?);";
@@ -432,5 +434,35 @@ public class WSCalculatorQueryBuilder {
 		return query.toString();
 	}
 	
+	public String getBillStatusUpdateQuery(List<String> consumerCodes, String businessService,
+			List<Object> preparedStmtList) {
+		StringBuilder builder = new StringBuilder(BILL_STATUS_UPDATE_QUERY);
+
+		if (!CollectionUtils.isEmpty(consumerCodes)) {
+
+			builder.append(" AND id IN ( SELECT billid from egbs_billdetail_v1 where consumercode IN (");
+			appendListToQuery(consumerCodes, preparedStmtList, builder);
+			builder.append(" AND businessservice=? )");
+			preparedStmtList.add(businessService);
+		}
+		
+		return builder.toString();
+	}
 	
+	/**
+	 * @param billIds
+	 * @param preparedStmtList
+	 * @param builder
+	 */
+	private void appendListToQuery(List<String> values, List<Object> preparedStmtList, StringBuilder builder) {
+		int length = values.size();
+
+		for (int i = 0; i < length; i++) {
+			builder.append(" ?");
+			if (i != length - 1)
+				builder.append(",");
+			preparedStmtList.add(values.get(i));
+		}
+		builder.append(")");
+	}
 }
