@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
@@ -55,7 +53,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,6 +66,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
+
+import java.util.stream.Stream;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -191,7 +209,9 @@ public class DemandService {
 			Map<String, Object> masterMap, boolean isForConnectionNo) {
 
 		boolean isDemandAvailable = false;
+		String sewConsumerCode= "";
 		List<Demand> createDemands = new ArrayList<>();
+		List<Demand> sewDemands = new ArrayList<>();
 		List<Demand> updateDemands = new ArrayList<>();
 		List<Demand> demandRes = new ArrayList<>();
 
@@ -257,7 +277,9 @@ public class DemandService {
 		List<Demand> demandRes = new LinkedList<>();
 		List<Demand> demandReq = new LinkedList<>();
 		List<Demand> demandsForMetered = new LinkedList<>();
-
+		String sewConsumerCode= "";
+		String businessServices= "";
+		
 		for (Calculation calculation : calculations) {
 			WaterConnection connection = calculation.getWaterConnection();
 			if (connection == null) {
@@ -280,6 +302,7 @@ public class DemandService {
 				owner = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).toCommonUser();
 			}
 			List<DemandDetail> demandDetails = new LinkedList<>();
+			List<DemandDetail> demandDetails1 = new LinkedList<>();
 			calculation.getTaxHeadEstimates().forEach(taxHeadEstimate -> {
 				demandDetails.add(DemandDetail.builder().taxAmount(taxHeadEstimate.getEstimateAmount())
 						.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).collectionAmount(BigDecimal.ZERO)
@@ -322,10 +345,42 @@ public class DemandService {
 			// For the metered connections demand has to create one by one
 			if (WSCalculationConstant.meteredConnectionType.equalsIgnoreCase(connection.getConnectionType())) {
 				demandsForMetered.add(demand);
-				
+				if(demand.getTenantId().equalsIgnoreCase("pb.amritsar")) {
+					List<String> usageCategory = waterCalculatorDao.fetchUsageCategory(demand.getConsumerCode());
+					if(usageCategory.size()>0) {
+						if(usageCategory.get(0).equals("NONRESIDENTIAL.COMMERCIAL")) {							
+							List<String> sewConsumerList = waterCalculatorDao.fetchSewConnection(demand.getConsumerCode());
+							if(sewConsumerList.size()>0) {
+								sewConsumerCode=sewConsumerList.get(0);								
+							}
+						}						
+					}				
+					businessServices ="SW";					
+					for(DemandDetail ddSew : demandDetails) {
+						DemandDetail dd1  = new DemandDetail();
+						dd1.setTaxHeadMasterCode("SW_CHARGE");
+						dd1.setDemandId(ddSew.getDemandId());
+						dd1.setAuditDetails(ddSew.getAuditDetails());
+						dd1.setCollectionAmount(ddSew.getCollectionAmount());
+						dd1.setId(ddSew.getId());
+						dd1.setTaxAmount(ddSew.getTaxAmount());
+						dd1.setTenantId(ddSew.getTenantId());						
+						demandDetails1.add(dd1);
+					}
+					
+					
+					Demand demand1 = Demand.builder().consumerCode(sewConsumerCode).demandDetails(demandDetails1).payer(owner)
+							.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(taxPeriodFrom)
+							.taxPeriodTo(taxPeriodTo).consumerType("sewerageConnection").businessService(businessServices)
+							.status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDaysInmillies).additionalDetails(additionalDetail).build();
+					demandsForMetered.add(demand1);
+				}
 			} else {
 				demandReq.add(demand);
 			}
+			List<String> consumerCodes= new ArrayList<String>();
+			consumerCodes.add(sewConsumerCode);
+			waterCalculatorDao.updateBillStatus(consumerCodes,"SW", "EXPIRED");
 				 
 			
 		}
@@ -405,7 +460,6 @@ public class DemandService {
 						
 		return demand;
 	}
-
 
 	/**
 	 * Returns the list of new DemandDetail to be added for updating the demand
