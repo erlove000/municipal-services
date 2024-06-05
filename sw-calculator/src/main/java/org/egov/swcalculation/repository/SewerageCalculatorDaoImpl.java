@@ -38,7 +38,7 @@ public class SewerageCalculatorDaoImpl implements SewerageCalculatorDao {
 		
 		List<Object> preparedStatement = new ArrayList<>();		
 		String query = "";	
-		if((tenantId.equals("pb.amrtisar"))) {
+		if((tenantId.equals("pb.amritsar"))) {
 			 query = queryBuilder.getConnectionNumberListForNonCommercial(tenantId, connectionType,SWCalculationConstant.ACTIVE, taxPeriodFrom, taxPeriodTo, cone, preparedStatement);
 		         log.info("Demand will not generate for commercial connections in testing: "+query);
 		}else {
