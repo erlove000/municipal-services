@@ -1,6 +1,6 @@
 package org.egov.wscalculation.web.controller;
 
-
+import java.sql.Connection;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,6 +13,8 @@ import org.egov.wscalculation.web.models.Demand;
 import org.egov.wscalculation.web.models.DemandResponse;
 import org.egov.wscalculation.web.models.GetBillCriteria;
 import org.egov.wscalculation.web.models.RequestInfoWrapper;
+import org.egov.wscalculation.web.models.SingleDemand;
+import org.egov.wscalculation.web.models.WaterDetails;
 import org.egov.wscalculation.service.DemandService;
 import org.egov.wscalculation.service.WSCalculationService;
 import org.egov.wscalculation.service.WSCalculationServiceImpl;
@@ -88,7 +90,15 @@ public class CalculatorController {
 		log.info("_jobscheduler::");
 		wSCalculationService.generateDemandBasedOnTimePeriod(requestInfoWrapper.getRequestInfo());
 	}
-	
+
+	@PostMapping("/_singledemand")
+	 public ResponseEntity<String> singledemandgen(@Valid @RequestBody SingleDemand singledemand) {
+		log.info("singledemandgen::");
+		 
+	            wSCalculationService.generateSingleDemand(singledemand);
+	            return ResponseEntity.status(HttpStatus.OK).body("Demand generated successfully");
+	        } 
+		
 	@PostMapping("/_jobbillscheduler")
 	public void jobbillscheduler(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
 		log.info("_jobbillscheduler::");
