@@ -33,6 +33,7 @@ import org.egov.wscalculation.web.models.CalculationCriteria;
 import org.egov.wscalculation.web.models.CalculationReq;
 import org.egov.wscalculation.web.models.Property;
 import org.egov.wscalculation.web.models.RequestInfoWrapper;
+import org.egov.wscalculation.web.models.SingleDemand;
 import org.egov.wscalculation.web.models.TaxHeadCategory;
 import org.egov.wscalculation.web.models.TaxHeadEstimate;
 import org.egov.wscalculation.web.models.TaxHeadMaster;
@@ -478,6 +479,35 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 			}
 		});
 	}
+
+
+	// Single Demand Generation 
+	
+	public void generateSingleDemand(SingleDemand singledemand) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime date = LocalDateTime.now();
+		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
+//		List<String> tenantIds = wSCalculationDao.getTenantId();
+		List<String> tenantIds = new ArrayList<>();
+		String tenat = singledemand.getTenantId();
+		tenantIds.add(tenat);
+		if (tenantIds.isEmpty()) {
+			log.info("No tenants are found for generating demand");
+			return;
+		}
+		log.info("Tenant Ids : " + tenantIds.toString());
+		tenantIds.forEach(tenantId -> {
+			try {
+			
+				demandService.SingleDemandGenerate(tenantId, singledemand);
+				
+			} catch (Exception e) {
+				log.error("Exception occured while generating demand for tenant: " + tenantId);
+				e.printStackTrace();
+			}
+		});
+	}
+	
 	
 	/**
 	 * Generate bill Based on Time (Monthly, Quarterly, Yearly)
