@@ -288,8 +288,10 @@ public class EstimationService {
 						String avarageMeterReading = (String) additionalDetail
 								.getOrDefault(WSCalculationConstant.AVARAGEMETERREADING, null);
 
+						Double unitRate = (Double) filteredSlabs.get(0).getCharge();
+
 						if (avarageMeterReading != null) {
-							waterCharge = BigDecimal.valueOf((avarageMeterReading) * Double.valueOf(filteredSlabs.get(0).getCharge()));
+							waterCharge = BigDecimal.valueOf(avarageMeterReading * unitRate);
 							BigDecimal b2 = waterCharge.round(m); 
 							waterCharge = BigDecimal.valueOf((Double.valueOf(formatter.format(b2))));
 						}
