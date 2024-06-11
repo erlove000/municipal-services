@@ -2,6 +2,9 @@ package org.egov.wscalculation.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -194,6 +197,8 @@ public class EstimationService {
 	public BigDecimal getWaterEstimationCharge(WaterConnection waterConnection, CalculationCriteria criteria,
 			Map<String, JSONArray> billingSlabMaster, ArrayList<String> billingSlabIds, CalculationReq request) {
 		BigDecimal waterCharge = BigDecimal.ZERO;
+		NumberFormat formatter = new DecimalFormat("#0.00");
+		MathContext m = new MathContext(2); 
 		HashMap<String, Object> additionalDetail = new HashMap<>();
 		additionalDetail = mapper.convertValue(waterConnection.getAdditionalDetails(), HashMap.class);
 		try {
@@ -284,8 +289,9 @@ public class EstimationService {
 								.getOrDefault(WSCalculationConstant.AVARAGEMETERREADING, null);
 
 						if (avarageMeterReading != null) {
-							waterCharge = BigDecimal.valueOf(
-									Double.parseDouble(avarageMeterReading) * filteredSlabs.get(0).getCharge());
+							waterCharge = BigDecimal.valueOf((avarageMeterReading) * filteredSlabs.get(0).getCharge());
+							BigDecimal b2 = waterCharge.round(m); 
+							waterCharge = BigDecimal.valueOf((Double.valueOf(formatter.format(b2))));
 						}
 
 					}
