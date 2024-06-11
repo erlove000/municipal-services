@@ -30,6 +30,7 @@ import org.egov.swcalculation.web.models.Property;
 import org.egov.swcalculation.web.models.RequestInfoWrapper;
 import org.egov.swcalculation.web.models.SewerageConnection;
 import org.egov.swcalculation.web.models.SewerageConnectionRequest;
+import org.egov.swcalculation.web.models.SingleDemand;
 import org.egov.swcalculation.web.models.TaxHeadCategory;
 import org.egov.swcalculation.web.models.TaxHeadEstimate;
 import org.egov.swcalculation.web.models.TaxHeadMaster;
@@ -458,6 +459,32 @@ public class SWCalculationServiceImpl implements SWCalculationService {
 				.connectionNo(adhocTaxReq.getConsumerCode()).taxHeadEstimates(estimates).build();
 		List<Calculation> calculations = Collections.singletonList(calculation);
 		return demandService.updateDemandForAdhocTax(adhocTaxReq.getRequestInfo(), calculations);
+	}
+
+
+	public void generateSingleDemand(SingleDemand singledemand) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime date = LocalDateTime.now();
+		log.info("Time schedule start for sewerage demand generation on : " + date.format(dateTimeFormatter));
+//		List<String> tenantIds = wSCalculationDao.getTenantId();
+		List<String> tenantIds = new ArrayList<>();
+		String tenat = singledemand.getTenantId();
+		tenantIds.add(tenat);
+		if (tenantIds.isEmpty()) {
+			log.info("No tenants are found for generating demand");
+			return;
+		}
+		log.info("Tenant Ids : " + tenantIds.toString());
+		tenantIds.forEach(tenantId -> {
+			try {
+
+				demandService.SingleDemandGenerate(tenantId, singledemand);
+
+			} catch (Exception e) {
+				log.error("Exception occured while generating demand for tenant: " + tenantId);
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	/**
