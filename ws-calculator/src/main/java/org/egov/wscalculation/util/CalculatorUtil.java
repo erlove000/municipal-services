@@ -23,7 +23,7 @@ import org.egov.wscalculation.web.models.Property;
 import org.egov.wscalculation.web.models.PropertyResponse;
 import org.egov.wscalculation.web.models.RequestInfoWrapper;
 import org.egov.wscalculation.web.models.SearchCriteria;
-// import org.egov.wscalculation.web.models.SingleDemand;
+import org.egov.wscalculation.web.models.SingleDemand;
 import org.egov.wscalculation.web.models.TaxPeriod;
 import org.egov.wscalculation.web.models.WaterConnection;
 import org.egov.wscalculation.web.models.WaterConnectionResponse;
@@ -332,20 +332,20 @@ public class CalculatorUtil {
 		return jsonOutput.get(0);
 	}
 
-	// public Map<String, Object> loadBillingFrequencyMasterDatas(SingleDemand singledemand, String tenantId) {
-	// 	log.info("loadBillingFrequencyMasterData");
-	// 	RequestInfo Req=singledemand.getRequestInfo();
-	// 	MdmsCriteriaReq mdmsCriteriaReq = getBillingFrequencyForScheduler(Req, tenantId);
-	// 	Object res = serviceRequestRepository.fetchResult(getMdmsSearchUrl(), mdmsCriteriaReq);
-	// 	log.info("loadBillingFrequencyMasterData::"+res);
-	// 	String jsonString = new JSONObject(res).toString();
-	// 	log.info("loadBillingFrequencyMasterData"+jsonString);
-	// 	if (res == null) {
-	// 		throw new CustomException("MDMS_ERROR_FOR_BILLING_FREQUENCY", "ERROR IN FETCHING THE BILLING FREQUENCY");
-	// 	}
-	// 	List<Map<String, Object>> jsonOutput = JsonPath.read(res, WSCalculationConstant.JSONPATH_ROOT_FOR_BilingPeriod);
-	// 	return jsonOutput.get(0);
-	// }
+	public Map<String, Object> loadBillingFrequencyMasterDatas(SingleDemand singledemand, String tenantId) {
+		log.info("loadBillingFrequencyMasterData");
+		RequestInfo Req=singledemand.getRequestInfo();
+		MdmsCriteriaReq mdmsCriteriaReq = getBillingFrequencyForScheduler(Req, tenantId);
+		Object res = serviceRequestRepository.fetchResult(getMdmsSearchUrl(), mdmsCriteriaReq);
+		log.info("loadBillingFrequencyMasterData::"+res);
+		String jsonString = new JSONObject(res).toString();
+		log.info("loadBillingFrequencyMasterData"+jsonString);
+		if (res == null) {
+			throw new CustomException("MDMS_ERROR_FOR_BILLING_FREQUENCY", "ERROR IN FETCHING THE BILLING FREQUENCY");
+		}
+		List<Map<String, Object>> jsonOutput = JsonPath.read(res, WSCalculationConstant.JSONPATH_ROOT_FOR_BilingPeriod);
+		return jsonOutput.get(0);
+	}
 	
 //	public Map<String, Object> getSchedulerBillingMasterData(RequestInfo requestInfo, String tenantId) {
 //		MdmsCriteriaReq mdmsCriteriaReq = getBillingPeriodForScheduler(requestInfo, tenantId);
