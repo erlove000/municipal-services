@@ -44,7 +44,7 @@ import org.egov.wscalculation.web.models.DemandResponse;
 import org.egov.wscalculation.web.models.GetBillCriteria;
 import org.egov.wscalculation.web.models.Property;
 import org.egov.wscalculation.web.models.RequestInfoWrapper;
-import org.egov.wscalculation.web.models.SingleDemand;
+// import org.egov.wscalculation.web.models.SingleDemand;
 import org.egov.wscalculation.web.models.TaxHeadEstimate;
 import org.egov.wscalculation.web.models.TaxPeriod;
 import org.egov.wscalculation.web.models.WaterConnection;
