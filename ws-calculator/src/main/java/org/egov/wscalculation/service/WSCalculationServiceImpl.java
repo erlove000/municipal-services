@@ -483,30 +483,30 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 
 	// Single Demand Generation 
 	
-	public void generateSingleDemand(SingleDemand singledemand) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime date = LocalDateTime.now();
-		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
-//		List<String> tenantIds = wSCalculationDao.getTenantId();
-		List<String> tenantIds = new ArrayList<>();
-		String tenat = singledemand.getTenantId();
-		tenantIds.add(tenat);
-		if (tenantIds.isEmpty()) {
-			log.info("No tenants are found for generating demand");
-			return;
-		}
-		log.info("Tenant Ids : " + tenantIds.toString());
-		tenantIds.forEach(tenantId -> {
-			try {
+// 	public void generateSingleDemand(SingleDemand singledemand) {
+// 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+// 		LocalDateTime date = LocalDateTime.now();
+// 		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
+// //		List<String> tenantIds = wSCalculationDao.getTenantId();
+// 		List<String> tenantIds = new ArrayList<>();
+// 		String tenat = singledemand.getTenantId();
+// 		tenantIds.add(tenat);
+// 		if (tenantIds.isEmpty()) {
+// 			log.info("No tenants are found for generating demand");
+// 			return;
+// 		}
+// 		log.info("Tenant Ids : " + tenantIds.toString());
+// 		tenantIds.forEach(tenantId -> {
+// 			try {
 			
-				demandService.SingleDemandGenerate(tenantId, singledemand);
+// 				demandService.SingleDemandGenerate(tenantId, singledemand);
 				
-			} catch (Exception e) {
-				log.error("Exception occured while generating demand for tenant: " + tenantId);
-				e.printStackTrace();
-			}
-		});
-	}
+// 			} catch (Exception e) {
+// 				log.error("Exception occured while generating demand for tenant: " + tenantId);
+// 				e.printStackTrace();
+// 			}
+// 		});
+// 	}
 	
 	
 	/**
