@@ -13,6 +13,7 @@ import org.egov.swcalculation.web.models.CalculationRes;
 import org.egov.swcalculation.web.models.DemandResponse;
 import org.egov.swcalculation.web.models.GetBillCriteria;
 import org.egov.swcalculation.web.models.RequestInfoWrapper;
+import org.egov.swcalculation.web.models.SingleDemand;
 import org.egov.swcalculation.service.DemandService;
 import org.egov.swcalculation.service.SWCalculationService;
 import org.egov.swcalculation.service.SWCalculationServiceImpl;
@@ -80,6 +81,15 @@ public class SWCalculationController {
 	public void jobscheduler(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
 		sWCalculationService.generateDemandBasedOnTimePeriod(requestInfoWrapper.getRequestInfo());
 	}
+
+	@PostMapping("/_singledemand")
+//	 public ResponseEntity<String> singledemandgen(@Valid @RequestBody SingleDemand singledemand) {
+	public void _singledemand(@Valid @RequestBody SingleDemand singledemand) {
+//		log.info("singledemandgen::");
+		 
+		     sWCalculationService.generateSingleDemand(singledemand);
+//	            return ResponseEntity.status(HttpStatus.OK).body("Demand generated successfully");
+	        } 
 	
 	@PostMapping("/_jobbillscheduler")
 	public void jobbillscheduler(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
