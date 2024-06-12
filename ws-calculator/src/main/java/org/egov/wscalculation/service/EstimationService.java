@@ -285,7 +285,7 @@ public class EstimationService {
 					if (meterStatus.equalsIgnoreCase(WSCalculationConstant.NO_METER)
 							|| meterStatus.equalsIgnoreCase(WSCalculationConstant.BREAKDOWN)) {
 
-						String avarageMeterReading = (String) additionalDetail
+						Double avarageMeterReading = (Double) additionalDetail
 								.getOrDefault(WSCalculationConstant.AVARAGEMETERREADING, null);
 
 						Double unitRate = (Double) filteredSlabs.get(0).getCharge();
