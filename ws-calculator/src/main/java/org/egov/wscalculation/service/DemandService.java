@@ -970,7 +970,7 @@ public class DemandService {
 	}
 
 
-	public void SingleDemandGenerate(String tenantId, SingleDemand singledemand) {
+	public String SingleDemandGenerate(String tenantId, SingleDemand singledemand) {
 		singledemand.getRequestInfo().getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterDatas(singledemand, tenantId);
 		long taxPeriodFrom = billingMasterData.get("taxPeriodFrom") == null ? 0l
@@ -981,7 +981,7 @@ public class DemandService {
 			throw new CustomException("NO_BILLING_PERIODS","MDMS Billing Period does not available for tenant: "+ tenantId);
 		}
 		
-		generateDemandForSingle(billingMasterData, singledemand, tenantId, taxPeriodFrom, taxPeriodTo);
+		return generateDemandForSingle(billingMasterData, singledemand, tenantId, taxPeriodFrom, taxPeriodTo);
 	}
 
 	/**
@@ -1131,9 +1131,10 @@ public class DemandService {
 
 	}
 
-	public String  generateDemandForSingle(Map<String, Object> master, SingleDemand singleDemand, String tenantId,
+	public String generateDemandForSingle(Map<String, Object> master, SingleDemand singleDemand, String tenantId,
 			Long taxPeriodFrom, Long taxPeriodTo) {
 		RequestInfo requestInfo=singleDemand.getRequestInfo();
+		String tempvariable="";
 		log.info("generateDemandForULB:: "+ tenantId+" taxPeriodFrom:: "+taxPeriodFrom+" taxPeriodTo "+taxPeriodTo);
 		try {
 			List<TaxPeriod> taxPeriods = calculatorUtils.getTaxPeriodsFromMDMS(requestInfo, tenantId);
@@ -1157,6 +1158,7 @@ public class DemandService {
 //	            }
 			
 			 if (connectionNos == null || connectionNos.size() <= 0) {
+				  tempvariable=null;
 		            throw new IllegalArgumentException("Demand not generated: No connections found");
 		        }
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
@@ -1245,7 +1247,7 @@ public class DemandService {
 
 
 					}
-
+tempvariable=waterConnection.getConnectionNo();
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.error("Exception occurred while generating demand for water connectionno: "+waterConnection.getConnectionNo() + " tenantId: "+tenantId+" Exception msg:"+e.getMessage());
@@ -1258,7 +1260,7 @@ public class DemandService {
 			e.printStackTrace();
 			log.error("Exception occurred while processing the demand generation for tenantId: "+tenantId);
 		}
-		 return "Demand generated successfully";
+		return tempvariable;
 	}
 
 	private boolean isValidBillingCycles(WaterDetails waterConnection, RequestInfo requestInfo, String tenantId,
