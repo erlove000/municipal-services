@@ -483,7 +483,8 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 
 	// Single Demand Generation 
 	
-	public void generateSingleDemand(SingleDemand singledemand) {
+public String generateSingleDemand(SingleDemand singledemand) {
+		String tempvariable=null;
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime date = LocalDateTime.now();
 		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
@@ -493,19 +494,19 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 		tenantIds.add(tenat);
 		if (tenantIds.isEmpty()) {
 			log.info("No tenants are found for generating demand");
-			return;
+			
 		}
 		log.info("Tenant Ids : " + tenantIds.toString());
-		tenantIds.forEach(tenantId -> {
+		
 			try {
 			
-				demandService.SingleDemandGenerate(tenantId, singledemand);
+				tempvariable=	demandService.SingleDemandGenerate(tenat, singledemand);
 				
 			} catch (Exception e) {
-				log.error("Exception occured while generating demand for tenant: " + tenantId);
+				log.error("Exception occured while generating demand for tenant: " + tenat);
 				e.printStackTrace();
 			}
-		});
+return tempvariable;
 	}
 	
 	
