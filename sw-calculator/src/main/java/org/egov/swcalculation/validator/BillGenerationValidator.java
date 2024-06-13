@@ -53,7 +53,7 @@ public class BillGenerationValidator {
 		}
 	}
 
-	public boolean checkBillingCycleDates(@Valid BillGenerationRequest billGenerationReq, RequestInfo requestInfo) {
+	public boolean checkBillingCycleDates(BillGenerationRequest billGenerationReq, RequestInfo requestInfo) {
 
        boolean checkBillingStatus = false;
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo,
@@ -73,7 +73,7 @@ public class BillGenerationValidator {
 	
 	}
 
-	private boolean validateExistingScheduledBillStatusForBatch(@Valid BillGenerationRequest billGenerationReq) {
+	private boolean validateExistingScheduledBillStatusForBatch(BillGenerationRequest billGenerationReq) {
 		 boolean checkBillingStatus = false;
 		BillScheduler billScheduler = billGenerationReq.getBillScheduler();
 		List<String> status = billGeneratorDao.fetchExistingBillSchedularStatusForLocality(billScheduler.getLocality(),
