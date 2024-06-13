@@ -52,24 +52,28 @@ public class BillGeneratorController {
 				
 		BillSchedulerResponse response=new BillSchedulerResponse();
 		List<BillScheduler> billDetails1 = new ArrayList<BillScheduler>();
+		List<BillScheduler> billDetails = new ArrayList<BillScheduler>();
+		//boolean is
 		String isBatch=billGenerationReq.getBillScheduler().getIsBatch();
-        	System.out.println("isBatch value"+isBatch);
-        	boolean batchBilling=false;
+        System.out.println("isBatch value"+isBatch);
+        boolean batchBilling=false;
 		if(isBatch.equals("true")) {
 			batchBilling = true;
 		}
-       	        if(batchBilling) {			
+       	 if(batchBilling) {		
 		List<String> listOfLocalities = sewerageCalculatorDao.getLocalityList(billGenerationReq.getBillScheduler().getTenantId(),billGenerationReq.getBillScheduler().getLocality());
 		for(String localityName : listOfLocalities) {		
 			billGenerationReq.getBillScheduler().setLocality(localityName);			
-			billGenerationValidator.validateBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
-			List<BillScheduler> billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
+			boolean localityStatus = billGenerationValidator.checkBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
+			if(!localityStatus) {
+			billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
+			}
 			billDetails1.addAll(billDetails);
 		}
-		}		
+		}			
 		else {
 			billGenerationValidator.validateBillingCycleDates(billGenerationReq, billGenerationReq.getRequestInfo());
-			List<BillScheduler> billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
+			billDetails = billGeneratorService.saveBillGenerationDetails(billGenerationReq);
 			billDetails1.addAll(billDetails);
 		}
 		 response = BillSchedulerResponse.builder().billSchedulers(billDetails1)
