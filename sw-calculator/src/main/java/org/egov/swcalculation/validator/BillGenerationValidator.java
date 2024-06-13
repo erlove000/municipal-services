@@ -53,4 +53,40 @@ public class BillGenerationValidator {
 		}
 	}
 
+	public boolean checkBillingCycleDates(@Valid BillGenerationRequest billGenerationReq, RequestInfo requestInfo) {
+
+       boolean checkBillingStatus = false;
+		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo,
+				billGenerationReq.getBillScheduler().getTenantId());
+
+		if (billingMasterData.get("taxPeriodFrom") == null || billingMasterData.get("taxPeriodTo") == null) {
+			throw new CustomException(SWCalculationConstant.SW_NO_BILLING_PERIOD_MSG,
+					SWCalculationConstant.SW_NO_BILLING_PERIOD_MSG);
+		}
+		long taxPeriodFrom = (long) billingMasterData.get("taxPeriodFrom");
+		long taxPeriodTo = (long) billingMasterData.get("taxPeriodTo");
+
+		billGenerationReq.getBillScheduler().setBillingcycleStartdate(taxPeriodFrom);
+		billGenerationReq.getBillScheduler().setBillingcycleEnddate(taxPeriodTo);
+		checkBillingStatus = validateExistingScheduledBillStatusForBatch(billGenerationReq);		
+		return checkBillingStatus;
+	
+	}
+
+	private boolean validateExistingScheduledBillStatusForBatch(@Valid BillGenerationRequest billGenerationReq) {
+		 boolean checkBillingStatus = false;
+		BillScheduler billScheduler = billGenerationReq.getBillScheduler();
+		List<String> status = billGeneratorDao.fetchExistingBillSchedularStatusForLocality(billScheduler.getLocality(),
+				billScheduler.getBillingcycleStartdate(), billScheduler.getBillingcycleEnddate(),
+				billScheduler.getTenantId());
+		
+			if (status.contains("INITIATED") || status.contains("INPROGRESS")) {			
+				checkBillingStatus = true;
+		
+		}
+			return checkBillingStatus;
+	}
+
+	
+
 }
