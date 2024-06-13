@@ -13,6 +13,6 @@ public interface WSCalculationService {
 	void jobScheduler();
 
 	void generateDemandBasedOnTimePeriod(RequestInfo requestInfo);
-	void generateSingleDemand(SingleDemand singledemand);
+	String  generateSingleDemand(SingleDemand singledemand);
 	void generateBillBasedLocality(RequestInfo requestInfo);
 }
