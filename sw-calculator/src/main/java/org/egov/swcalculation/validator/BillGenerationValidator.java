@@ -46,7 +46,7 @@ public class BillGenerationValidator {
 				billScheduler.getBillingcycleStartdate(), billScheduler.getBillingcycleEnddate(),
 				billScheduler.getTenantId());
 
-		if (status.contains("INITIATED") || status.contains("INPROGRESS") || status.contains("COMPLETED")) {
+		if (status.contains("INITIATED") || status.contains("INPROGRESS")) {
 
 			throw new CustomException(SWCalculationConstant.SW_DUPLICATE_BILL_SCHEDULER,
 					SWCalculationConstant.SW_DUPLICATE_BILL_SCHEDULER_MSG + billScheduler.getLocality());
