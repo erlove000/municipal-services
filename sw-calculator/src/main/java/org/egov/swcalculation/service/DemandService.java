@@ -709,7 +709,7 @@ List<Demand> demands=res.getDemands();
 		generateDemandForULB(billingMasterData, requestInfo, tenantId, taxPeriodFrom, taxPeriodTo);
 	}
 
-	public void SingleDemandGenerate(String tenantId, SingleDemand singledemand) {
+	public String  SingleDemandGenerate(String tenantId, SingleDemand singledemand) {
 		singledemand.getRequestInfo().getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterDatas(singledemand, tenantId);
 		long taxPeriodFrom = billingMasterData.get("taxPeriodFrom") == null ? 0l
@@ -720,7 +720,7 @@ List<Demand> demands=res.getDemands();
 			throw new CustomException("NO_BILLING_PERIODS","MDMS Billing Period does not available for tenant: "+ tenantId);
 		}
 
-		generateDemandForSingle(billingMasterData, singledemand, tenantId, taxPeriodFrom, taxPeriodTo);
+		return generateDemandForSingle(billingMasterData, singledemand, tenantId, taxPeriodFrom, taxPeriodTo);
 	}
 
 	/**
@@ -873,6 +873,7 @@ List<Demand> demands=res.getDemands();
 	public String generateDemandForSingle(Map<String, Object> master, SingleDemand singleDemand, String tenantId,
 			Long taxPeriodFrom, Long taxPeriodTo) {
 		RequestInfo requestInfo=singleDemand.getRequestInfo();
+		String tempvariable="";
 		log.info("generateDemandForULB:: "+ tenantId+" taxPeriodFrom:: "+taxPeriodFrom+" taxPeriodTo "+taxPeriodTo);
 		try {
 			List<TaxPeriod> taxPeriods = calculatorUtils.getTaxPeriodsFromMDMS(requestInfo, tenantId);
@@ -894,6 +895,7 @@ List<Demand> demands=res.getDemands();
 			log.info("Total Connections: {} and batch count: {}", connectionNos.size(), bulkSaveDemandCount);
 			
 			 if (connectionNos == null || connectionNos.size() <= 0) {
+				 tempvariable=null;
 		            throw new IllegalArgumentException("Demand not generated: No connections found");
 		        }
 
@@ -979,6 +981,7 @@ List<Demand> demands=res.getDemands();
 						connectionNosCount=0;
 
 					}
+					tempvariable=sewConnDetails.getConnectionNo();
 
 				}catch (Exception e) {
 					log.error("Exception occurred while generating demand for sewerage connectionno: "+sewConnDetails.getConnectionNo() + " tenantId: "+tenantId);
@@ -988,7 +991,7 @@ List<Demand> demands=res.getDemands();
 		}catch (Exception e) {
 			log.error("Exception occurred while processing the demand generation for tenantId: "+tenantId);
 		}
-		return "Demand generated successfully";	
+		return tempvariable;
 		}
 
 	private boolean isValidBillingCycles(SewerageDetails detail, long taxPeriodFrom, long taxPeriodTo,
