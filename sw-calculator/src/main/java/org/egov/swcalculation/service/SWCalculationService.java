@@ -14,7 +14,7 @@ public interface SWCalculationService {
 	
 	void generateDemandBasedOnTimePeriod(RequestInfo requestInfo);
 
-	void generateSingleDemand(SingleDemand singledemand);
+	String generateSingleDemand(SingleDemand singledemand);
 	
 	List<Calculation> getEstimation(CalculationReq request);
 	
