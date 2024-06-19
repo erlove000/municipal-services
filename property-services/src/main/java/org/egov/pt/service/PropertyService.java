@@ -193,7 +193,7 @@ if(!request.getProperty().getCreationReason().equals(CreationReason.MUTATION))
 		if(config.getIsWorkflowEnabled()) {
 
 			State state = wfService.updateWorkflow(request, CreationReason.UPDATE);
-			String Proptobestatus=request.getProperty().getAdditionalDetails().get("propertytobestatus").asText();
+			// String Proptobestatus=request.getProperty().getAdditionalDetails().get("propertytobestatus").asText();
 
 
 			if (state.getIsStartState() == true
@@ -206,15 +206,15 @@ if(!request.getProperty().getCreationReason().equals(CreationReason.MUTATION))
 				util.saveOldUuidToRequest(request, propertyFromSearch.getId());
 				producer.push(config.getSavePropertyTopic(), request);
 
-			}
-			else if (state.getIsStartState() == true
-					&& state.getApplicationStatus().equalsIgnoreCase(Status.INWORKFLOW.toString())
-					&& !propertyFromSearch.getStatus().equals(Status.INWORKFLOW) && Proptobestatus.equalsIgnoreCase("ACTIVE")) {
+			// }
+			// else if (state.getIsStartState() == true
+			// 		&& state.getApplicationStatus().equalsIgnoreCase(Status.INWORKFLOW.toString())
+			// 		&& !propertyFromSearch.getStatus().equals(Status.INWORKFLOW) && Proptobestatus.equalsIgnoreCase("ACTIVE")) {
 
-				propertyFromSearch.setStatus(Status.ACTIVE);
-				producer.push(config.getUpdatePropertyTopic(), OldPropertyRequest);
-				util.saveOldUuidToRequest(request, propertyFromSearch.getId());
-				producer.push(config.getSavePropertyTopic(), request);
+			// 	propertyFromSearch.setStatus(Status.ACTIVE);
+			// 	producer.push(config.getUpdatePropertyTopic(), OldPropertyRequest);
+			// 	util.saveOldUuidToRequest(request, propertyFromSearch.getId());
+			// 	producer.push(config.getSavePropertyTopic(), request);
 
 			}
 			else if (state.getIsTerminateState()
