@@ -182,12 +182,12 @@ public static final Logger log = LoggerFactory.getLogger(PropertyValidator.class
 			fieldsUpdated.remove("creationReason");
 			isstateUpdatable = true;
 
-		} 
-			else if (property.getWorkflow().getAction().equalsIgnoreCase(configs.getMutationOpenState())
-			&& request.getProperty().getAdditionalDetails().get("propertytobestatus").asText().equalsIgnoreCase("ACTIVE"))
-	{
-		fieldsUpdated.remove("creationReason");
-		isstateUpdatable = true;
+	// 	} 
+	// 		else if (property.getWorkflow().getAction().equalsIgnoreCase(configs.getMutationOpenState())
+	// 		&& request.getProperty().getAdditionalDetails().get("propertytobestatus").asText().equalsIgnoreCase("ACTIVE"))
+	// {
+	// 	fieldsUpdated.remove("creationReason");
+	// 	isstateUpdatable = true;
 
 	}
 		
@@ -254,7 +254,7 @@ public static final Logger log = LoggerFactory.getLogger(PropertyValidator.class
 		
 		CreationReason reason = property.getCreationReason();
 		if (!propertyFromSearch.getStatus().equals(Status.ACTIVE)
-				&& !propertyFromSearch.getCreationReason().equals(reason) && request.getProperty().getAdditionalDetails().get("propertytobestatus").asText().equalsIgnoreCase("ACTIVE")) {
+				&& !propertyFromSearch.getCreationReason().equals(reason)) {
 			throw new CustomException("EG_PT_ERROR_CREATION_REASON",
 					"The Creation reason sent in the update Request is Invalid, The Creationg reason can be changed only when a new process is initiated on an ACTIVE record");
 		} else if (propertyFromSearch.getStatus().equals(Status.ACTIVE) && reason.equals(CreationReason.CREATE)) {
